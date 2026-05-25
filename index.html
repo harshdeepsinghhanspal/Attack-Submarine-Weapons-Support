@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEA/SKY-6 CMS — Weapons Control Console</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#040a04;min-height:100vh}
+.cons{background:#060c06;font-family:'Courier New',monospace;color:#00ff41;padding:6px;width:100%;max-width:2000px;margin:0 auto}
+.hdr{background:#040a04;border:1px solid #1a4a1a;border-bottom:2px solid #00cc33;padding:4px 8px;display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;flex-wrap:wrap;gap:4px}
+.htitle{font-size:10px;font-weight:bold;color:#00ff41;letter-spacing:2px}
+.hst{display:flex;gap:10px;font-size:8px;color:#007a1a;flex-wrap:wrap}
+.hsi{display:flex;align-items:center;gap:4px}
+.led{width:6px;height:6px;border-radius:50%}
+.lg{background:#00ff41;box-shadow:0 0 5px #00ff41}
+.la{background:#ffaa00;box-shadow:0 0 5px #ffaa00}
+.lr{background:#ff3333;box-shadow:0 0 5px #ff3333}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:0.15}}
+.blink{animation:bk 0.9s infinite}
+.stime{font-size:9px;color:#00cc33;letter-spacing:2px}
+.outerrow{display:grid;grid-template-columns:1fr 380px;gap:5px;margin-bottom:5px;align-items:stretch}
+.screens-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}
+.right-col{display:flex;flex-direction:column;gap:5px;min-width:0;height:100%}
+.right-col .pnl:last-child{flex:1}
+.botrow{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.mainrow{display:contents}
+.pnl{background:#040a04;border:1px solid #153a15;padding:6px}
+.ptitle{font-size:9px;letter-spacing:2px;color:#009a22;border-bottom:1px solid #122a12;padding-bottom:2px;margin-bottom:5px}
+canvas{display:block;background:#020a02;border:1px solid #153a15}
+/* contact table */
+.ttbl{font-size:9px;width:100%;border-collapse:collapse}
+.ttbl th{color:#006a14;font-size:8px;letter-spacing:1px;padding:2px 3px;border-bottom:1px solid #122a12;text-align:left;overflow:hidden;white-space:nowrap}
+.ttbl td{padding:2px 3px;border-bottom:1px solid #081808;color:#00bb2e;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0}
+.ttbl tr:hover td{background:#001200}
+.ttbl tr.sel td{background:#001800;color:#00ff41}
+.ttbl tr.tgt td{background:#0a0000}
+.cid{color:#ffaa00}
+.thi{color:#ff4444}.thm{color:#ffaa00}.thl{color:#44ff44}.tun{color:#666}
+.taci{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:4px}
+.tc{background:#030b03;border:1px solid #0f270f;padding:2px 4px}
+.tclb{color:#006a14;font-size:8px;letter-spacing:1px;display:block}
+.tcv{color:#00ff41;font-size:10px;font-weight:bold}
+.tube-il-wrap{display:flex;flex-direction:column;gap:5px}
+.tube-section{min-width:0}
+.il-section{min-width:164px}
+.tubegrid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:5px}
+.tube{border:2px solid #153a15;padding:3px 4px;background:#030b03;cursor:pointer;transition:all .15s}
+.tube:hover{border-color:#00aa28}
+.tube.loaded{border-color:#1a5a1a}
+.tube.flood{border-color:#ffaa00;animation:bk .5s infinite}
+.tube.rdy{border-color:#00ff41;background:#001200}
+.tube.fired{border-color:#ff4444;background:#0f0000}
+.tube.sel{border-color:#00ff41 !important;background:#002800 !important;box-shadow:0 0 8px rgba(0,255,65,0.35) inset, 0 0 6px rgba(0,255,65,0.25)}
+.tnum{font-size:8px;color:#006a14;letter-spacing:1px}
+.tube.sel .tnum{color:#00ff41;font-weight:bold}
+.ttype{font-size:10px;color:#00cc33;font-weight:bold;margin:1px 0}
+.tstat{font-size:8px}
+.tbar{height:2px;background:#0a1e0a;margin-top:2px;border-radius:1px;overflow:hidden}
+.tfill{height:100%;transition:width 2.5s;border-radius:1px}
+.twsel{background:#030b03;border:1px solid #153a15;color:#00cc33;font-family:'Courier New',monospace;font-size:9px;width:100%;padding:1px 2px;margin-top:2px}
+.twsel:focus{outline:none;border-color:#00ff41}
+.wactn{display:flex;flex-direction:column;gap:2px;margin-bottom:5px}
+.btn{border:none;cursor:pointer;font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;padding:3px 5px;text-transform:uppercase;transition:all .1s;width:100%}
+.bg{background:transparent;border:1px solid #153a15;color:#00aa28}.bg:hover{background:#001500;border-color:#00ff41;color:#00ff41}
+.ba{background:transparent;border:1px solid #664400;color:#ffaa00}.ba:hover{background:#150e00;border-color:#ffaa00}
+.bd{background:transparent;border:2px solid #660000;color:#ff4444;font-weight:bold;font-size:11px;letter-spacing:2px;padding:5px}
+.bd:hover:not(:disabled){background:#0f0000;border-color:#ff0000}
+.bd:disabled{opacity:0.25;cursor:not-allowed}
+.bd.arm{border-color:#ff0000;box-shadow:0 0 6px rgba(255,0,0,0.5);animation:bk .7s infinite}
+.bd.pressed{border-color:#ff0000;background:#1a0000;animation:none;opacity:1}
+.ilrow{display:flex;align-items:center;justify-content:space-between;padding:3px 6px;background:#061406;border:1px solid #1a4a1a;margin-bottom:3px;gap:4px}
+.illb{font-size:9px;color:#00cc33;letter-spacing:1px;white-space:nowrap;font-weight:bold}
+.tog{width:28px;height:14px;background:#2a0000;border:1px solid #880000;border-radius:7px;cursor:pointer;position:relative;transition:all .2s;flex-shrink:0}
+.tog.on{background:#003800;border-color:#00ff41;box-shadow:0 0 4px rgba(0,255,65,0.4)}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:9px;height:9px;border-radius:50%;background:#cc0000;transition:all .2s}
+.tog.on::after{left:15px;background:#00ff41;box-shadow:0 0 5px #00ff41}
+.firesec{margin-top:5px;padding:6px;border:2px solid #aa0000;background:#100000}
+.firelb{font-size:9px;color:#ff4444;letter-spacing:2px;margin-bottom:4px;text-align:center;font-weight:bold}
+.dfire{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.grange{-webkit-appearance:none;background:#0a1e0a;height:3px;border-radius:1px;outline:none;width:100%}
+.grange::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;background:#00ff41;border-radius:50%;cursor:pointer}
+.gsel{background:#030b03;border:1px solid #153a15;color:#00cc33;font-family:'Courier New',monospace;font-size:9px;width:100%;padding:2px;margin-top:3px}
+.gsel:focus{outline:none;border-color:#00ff41}
+.elog{font-size:9px;height:80px;overflow-y:auto;padding:3px;background:#030b03;border:1px solid #0d220d}
+.elog::-webkit-scrollbar{width:3px}.elog::-webkit-scrollbar-track{background:#020802}.elog::-webkit-scrollbar-thumb{background:#153a15}
+.ll{padding:1px 0;border-bottom:1px solid #050e05}
+.lt{color:#004f0e}.lm{color:#009a22}.lw{color:#ffaa00}.lc{color:#ff4444}
+.dprow{display:flex;align-items:center;gap:4px;margin-bottom:3px}
+.dplb{font-size:8px;color:#006a14;letter-spacing:1px;min-width:54px}
+.dpv{font-size:9px;color:#00ff41;min-width:36px;text-align:right}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid #091809}
+.pk{color:#006a14;letter-spacing:1px;font-size:8px}
+.pv{color:#00cc33;font-size:9px}
+.wcdir{border:1px solid #153a15;background:#030b03;color:#00aa28;font-size:14px;padding:4px;cursor:pointer;text-align:center;transition:all .1s;font-family:sans-serif;display:flex;align-items:center;justify-content:center;user-select:none}
+.wcdir:hover,.wcdir.active{background:#001500;border-color:#00ff41;color:#00ff41}
+.wgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:4px}
+.wblank{border:1px solid transparent}
+/* threat dropdown per row */
+.threat-sel{background:#030b03;border:1px solid #153a15;color:#00cc33;font-family:'Courier New',monospace;font-size:6px;padding:1px 2px;width:68px}
+.threat-sel:focus{outline:none;border-color:#00ff41}
+.tgt-btn{background:transparent;border:1px solid #440000;color:#ff4444;font-family:'Courier New',monospace;font-size:6px;padding:1px 3px;cursor:pointer;white-space:nowrap}
+.tgt-btn:hover{background:#0f0000;border-color:#ff0000}
+.tgt-btn.active{background:#1a0000;border-color:#ff0000;color:#ff6666}
+/* legend */
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:8px}
+.lgi{display:flex;align-items:center;gap:3px;color:#006a14}
+.lgdot{width:7px;height:7px;border-radius:50%}
+@media(max-width:800px){
+  .outerrow{grid-template-columns:1fr}
+  .screens-row{grid-template-columns:1fr 1fr}
+  .botrow{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+  .outerrow{grid-template-columns:1fr}
+  .screens-row{grid-template-columns:1fr}
+  .botrow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="cons" id="cons" tabindex="0">
+<div class="hdr">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="htitle">SEA/SKY-6 CMS — WEAPONS CONTROL CONSOLE</div>
+    <button onclick="document.getElementById('tutorial-section').scrollIntoView({behavior:'smooth'})"
+      style="background:transparent;border:1px solid #00cc33;color:#00ff41;font-family:'Courier New',monospace;
+             font-size:8px;letter-spacing:2px;padding:2px 8px;cursor:pointer;text-transform:uppercase;
+             transition:all .15s;white-space:nowrap"
+      onmouseover="this.style.background='#001800';this.style.borderColor='#00ff41'"
+      onmouseout="this.style.background='transparent';this.style.borderColor='#00cc33'">
+      ▼ TUTORIAL
+    </button>
+  </div>
+  <div class="hst">
+    <div class="hsi"><div class="led lg"></div>SYSTEM ONLINE</div>
+    <div class="hsi"><div class="led la" id="arled"></div>ARMED: <span id="arct">0</span></div>
+    <div class="hsi"><div class="led lg" id="led-contacts"></div>CONTACTS: <span id="contact-ct" style="color:#00ff41">0</span></div>
+    <div class="hsi"><div class="led lg"></div>SONAR LINK</div>
+    <div class="hsi"><div class="led lg"></div>CONN</div>
+    <div class="hsi" style="color:#ffaa00">ACTIVE TUBE: <span id="actube-hdr" style="color:#00ff41">T1</span></div>
+    <div class="hsi" style="color:#ff4444">TARGET: <span id="tgt-hdr" style="color:#ffaa00">NONE</span></div>
+  </div>
+  <div class="stime" id="stime">00:00:00Z</div>
+</div>
+
+<div class="outerrow">
+  <!-- LEFT: Contact list + Tactical plot side-by-side, log below -->
+  <div>
+    <!-- Contact list LEFT, Tactical plot RIGHT -->
+    <div style="display:grid;grid-template-columns:360px 1fr;gap:5px;margin-bottom:5px;align-items:start">
+      <!-- Contact list -->
+      <div class="pnl">
+        <div class="ptitle">CONTACT LIST</div>
+        <div style="font-size:7px;margin-bottom:3px;line-height:1.6">
+          <span style="color:#ff4444">&#9632; HOSTILE</span> &nbsp;
+          <span style="color:#ffaa00">&#9632; UNKNOWN</span><br>
+          <span style="color:#44ff44">&#9632; FRIENDLY</span> &nbsp;
+          <span style="color:#4488ff">&#9632; NEUTRAL</span>
+        </div>
+        <div style="font-size:6px;color:#004f0e;letter-spacing:1px;margin-bottom:2px">CLICK ROW TO SELECT</div>
+        <div id="ctbl-wrap" style="overflow-y:auto;overflow-x:hidden;max-height:380px">
+          <table class="ttbl" id="ctbl" style="table-layout:fixed;width:100%">
+            <colgroup>
+              <col style="width:15%"><col style="width:20%"><col style="width:11%"><col style="width:11%"><col style="width:10%"><col style="width:18%"><col style="width:15%">
+            </colgroup>
+            <thead><tr><th>ID</th><th>TYPE</th><th>BRG</th><th>RNG</th><th>SPD</th><th>THREAT</th><th>TGT</th></tr></thead>
+            <tbody id="ctbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Tactical plot -->
+      <div class="pnl" style="text-align:center">
+        <div class="ptitle" style="text-align:left">TACTICAL FIRE CONTROL PLOT — CLICK TO SELECT · RIGHT-CLICK TO DESIGNATE TARGET</div>
+        <canvas id="tac" width="460" height="460" style="display:inline-block;background:#020a02;border:1px solid #153a15;cursor:crosshair;max-width:100%"></canvas>
+        <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;justify-content:center">
+          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">BRG</span><span class="tcv" id="sbrg">---</span></div>
+          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">RNG</span><span class="tcv" id="srng">---</span></div>
+          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">SPD</span><span class="tcv" id="sspd">---</span></div>
+          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">P(K)</span><span class="tcv" id="spk" style="color:#ffaa00">---</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- BOTTOM LOG + PRESETS below the plot -->
+    <div class="botrow">
+      <div class="pnl">
+        <div class="ptitle">EVENT & FIRE CONTROL LOG</div>
+        <div class="elog" id="elog">
+          <div class="ll"><span class="lt">[00:00:01] </span><span class="lm">System initialization complete.</span></div>
+          <div class="ll"><span class="lt">[00:00:02] </span><span class="lm">Sonar link established — BQQ-10 active.</span></div>
+          <div class="ll"><span class="lt">[00:00:03] </span><span class="lm">Tube 1 &amp; 2 loaded MK-48 ADCAP. Tubes 3–4 empty.</span></div>
+        </div>
+      </div>
+      <div class="pnl">
+        <div class="ptitle">WEAPON PRESET PARAMETERS</div>
+        <div class="prow"><span class="pk">SEARCH PATTERN</span><span class="pv">SNAKE-6</span></div>
+        <div class="prow"><span class="pk">ENABLE RNG</span><span class="pv" id="pr-er">1800m</span></div>
+        <div class="prow"><span class="pk">DEPTH LIMIT</span><span class="pv" id="pr-dl">450m</span></div>
+        <div class="prow"><span class="pk">WIRE GUIDANCE</span><span class="pv" style="color:#00ff41">ENABLED</span></div>
+        <select class="gsel" onchange="logEvt('Homing mode: '+this.value,'lm')">
+          <option>ACTIVE/PASSIVE</option><option>PASSIVE ONLY</option><option>ACTIVE ONLY</option><option>WAKE HOMING</option>
+        </select>
+        <div class="dprow" style="margin-top:4px"><span class="dplb">DEPTH LIM</span><input type="range" class="grange" min="50" max="800" value="450" step="10" oninput="document.getElementById('pr-dl').textContent=this.value+'m'"><span class="dpv">450m</span></div>
+        <div class="dprow"><span class="dplb">ENABLE RNG</span><input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m'"><span class="dpv">1800m</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COL: Tubes → Interlocks → Wire Guidance stacked -->
+  <div class="right-col">
+    <!-- Tube & Weapon Status -->
+    <div class="pnl">
+      <div class="ptitle">TUBE & WEAPON STATUS</div>
+      <div class="tubegrid" id="tubegrid">
+        <div class="tube loaded sel" id="te0" onclick="selectTube(0)">
+          <div class="tnum">TUBE 1</div>
+          <div class="ttype" id="ttype0">MK-48 ADCAP</div>
+          <div class="tstat" id="ts0" style="color:#00aa28">LOADED</div>
+          <div class="tbar"><div class="tfill" id="tf0" style="width:100%;background:#00aa28"></div></div>
+          <select class="twsel" id="wsel0" onchange="changeWeapon(0,this.value)" onclick="event.stopPropagation()">
+            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="MK-48 MOD7">MK-48 MOD7</option>
+            <option value="UUM-44 SUBROC">UUM-44 SUBROC</option>
+            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+            <option value="EMPTY">-- EMPTY --</option>
+          </select>
+        </div>
+        <div class="tube loaded" id="te1" onclick="selectTube(1)">
+          <div class="tnum">TUBE 2</div>
+          <div class="ttype" id="ttype1">MK-48 ADCAP</div>
+          <div class="tstat" id="ts1" style="color:#00aa28">LOADED</div>
+          <div class="tbar"><div class="tfill" id="tf1" style="width:100%;background:#00aa28"></div></div>
+          <select class="twsel" id="wsel1" onchange="changeWeapon(1,this.value)" onclick="event.stopPropagation()">
+            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="MK-48 MOD7">MK-48 MOD7</option>
+            <option value="UUM-44 SUBROC">UUM-44 SUBROC</option>
+            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+            <option value="EMPTY">-- EMPTY --</option>
+          </select>
+        </div>
+        <div class="tube" id="te2" onclick="selectTube(2)">
+          <div class="tnum">TUBE 3</div>
+          <div class="ttype" id="ttype2">-- EMPTY --</div>
+          <div class="tstat" id="ts2" style="color:#444">EMPTY</div>
+          <div class="tbar"><div class="tfill" id="tf2" style="width:0%;background:#444"></div></div>
+          <select class="twsel" id="wsel2" onchange="changeWeapon(2,this.value)" onclick="event.stopPropagation()">
+            <option value="EMPTY">-- EMPTY --</option>
+            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="MK-48 MOD7">MK-48 MOD7</option>
+            <option value="UUM-44 SUBROC">UUM-44 SUBROC</option>
+            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+          </select>
+        </div>
+        <div class="tube" id="te3" onclick="selectTube(3)">
+          <div class="tnum">TUBE 4</div>
+          <div class="ttype" id="ttype3">-- EMPTY --</div>
+          <div class="tstat" id="ts3" style="color:#444">EMPTY</div>
+          <div class="tbar"><div class="tfill" id="tf3" style="width:0%;background:#444"></div></div>
+          <select class="twsel" id="wsel3" onchange="changeWeapon(3,this.value)" onclick="event.stopPropagation()">
+            <option value="EMPTY">-- EMPTY --</option>
+            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="MK-48 MOD7">MK-48 MOD7</option>
+            <option value="UUM-44 SUBROC">UUM-44 SUBROC</option>
+            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+          </select>
+        </div>
+      </div>
+      <div id="reload-sec" style="display:none;margin-bottom:4px;padding:4px;border:1px solid #1a5a1a;background:#020a02">
+        <div style="font-size:7px;color:#006a14;letter-spacing:1px;margin-bottom:3px">TUBE <span id="reload-tube-lbl">—</span> — AVAILABLE FOR RELOAD</div>
+        <select class="gsel" id="reload-wsel" style="margin-bottom:3px">
+          <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+          <option value="MK-48 MOD7">MK-48 MOD7</option>
+          <option value="UUM-44 SUBROC">UUM-44 SUBROC</option>
+          <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+        </select>
+        <button class="btn bg" onclick="reloadTube()">&#8635; RELOAD TUBE <span id="reload-btn-lbl">—</span></button>
+      </div>
+      <div class="wactn">
+        <button class="btn bg" onclick="floodTube()" id="floodbtn">FLOOD & EQUALIZE — TUBE <span id="floodlbl">1</span></button>
+        <button class="btn bg" onclick="openDoor()" id="doorbtn">OUTER DOOR OPEN — TUBE <span id="doorlbl">1</span></button>
+        <button class="btn ba" onclick="uploadPreset()">UPLOAD PRESET — TUBE <span id="presetlbl">1</span></button>
+      </div>
+    </div>
+    <!-- Interlocks & Authorization -->
+    <div class="pnl" style="border-color:#1a5a1a">
+      <div class="ptitle" style="color:#00ff41;border-bottom-color:#1a5a1a">INTERLOCKS & AUTHORIZATION</div>
+      <div class="ilrow"><span class="illb">FIRE AUTH KEY</span><div class="tog" id="il0" onclick="toggleIL(0)"></div></div>
+      <div class="ilrow"><span class="illb">CO CONFIRM</span><div class="tog" id="il1" onclick="toggleIL(1)"></div></div>
+      <div class="ilrow"><span class="illb">XO CONFIRM</span><div class="tog" id="il2" onclick="toggleIL(2)"></div></div>
+      <div class="ilrow"><span class="illb">FLOOD CONFIRMED</span><div class="tog" id="il3" onclick="toggleIL(3)"></div></div>
+      <div class="firesec">
+        <div class="firelb">WEAPONS FREE — DUAL TRIGGER</div>
+        <div class="dfire">
+          <button class="btn bd" id="fa" onclick="fireA()" disabled>[ FIRE A ]</button>
+          <button class="btn bd" id="fb" onclick="fireB()" disabled>[ FIRE B ]</button>
+        </div>
+      </div>
+    </div>
+    <!-- Wire Guidance -->
+    <div class="pnl">
+      <div class="ptitle">WIRE-GUIDANCE CONTROL — NUMPAD 8/4/6/2</div>
+      <div style="font-size:7px;color:#006a14;margin-bottom:3px">ACTIVE: <span id="wt-id" style="color:#ffaa00">NO WEAPON IN WIRE</span> &nbsp; SPD: <span id="ws-disp" style="color:#00ff41">—</span></div>
+      <div class="wgrid">
+        <div class="wblank"></div>
+        <div class="wcdir" id="wup" onclick="wireCmd('SHALLOW')">&#9650;</div>
+        <div class="wblank"></div>
+        <div class="wcdir" id="wleft" onclick="wireCmd('PORT')">&#9664;</div>
+        <div style="display:flex;align-items:center;justify-content:center;font-size:6px;color:#006a14;text-align:center">STEER<br>DEPTH</div>
+        <div class="wcdir" id="wright" onclick="wireCmd('STBD')">&#9654;</div>
+        <div class="wblank"></div>
+        <div class="wcdir" id="wdn" onclick="wireCmd('DEEP')">&#9660;</div>
+        <div class="wblank"></div>
+      </div>
+      <div class="dprow"><span class="dplb">SPEED CMD</span><input type="range" class="grange" min="10" max="55" value="35" step="1" id="wsl" oninput="wireSpdSet(this.value)"><span class="dpv" id="wsd">35kt</span></div>
+      <div style="font-size:6px;color:#006a14;margin-top:2px">WIRE: <span id="wst" style="color:#00ff41">STANDBY</span> &nbsp; PAID OUT: <span id="wpo" style="color:#00cc33">0m</span></div>
+      <div style="font-size:6px;color:#555;margin-top:2px">MAX WIRE: ~18,000m &nbsp;|&nbsp; STEER RATE: 1.5°/CMD</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px">
+        <button class="btn ba" onclick="cutWire()">CUT WIRE</button>
+        <button class="btn bg" onclick="wireHoming()">ENABLE HOMING</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== STATE ==========
+var ST=Date.now();
+var selContact=-1;   // index into contacts[] that is currently SELECTED (TMA focus)
+var selTarget=-1;    // index into contacts[] designated as FIRE TARGET
+var tubeStates=['loaded','loaded','empty','empty'];
+var tubeWeapons=['MK-48 ADCAP','MK-48 ADCAP','',''];
+var selTube=0;
+var ILs=[false,false,false,false];
+var fireAon=false;
+var torpedoes=[];
+var tacTimer=0;
+var sonarAngle=0;
+var activeWireTorp=null;
+var explosions=[];
+var WIRE_MAX=18000;
+var contactIdCounter=8; // monotonic, never resets — initial contacts use 1-8
+
+// ========== CONTACTS ==========
+// type: 'sub-hostile','sub-friendly','ship-hostile','ship-neutral','ship-friendly'
+// threat: 'HIGH','MED','LOW','UNKNOWN'
+// brg: bearing degrees, rng: 0..1 (fraction of display radius), hdg: heading, spd: knots
+// x,y: cartesian on display (computed each frame), alive: bool
+// laneHdg assigned to surface ships so they transit on a consistent corridor
+var contacts=[
+  {id:'C-01',type:'sub-hostile',  threat:'HIGH',    brg:47,  rng:0.58, hdg:220, spd:18, alive:true, track:[]},
+  {id:'C-02',type:'ship-neutral', threat:'LOW',     brg:183, rng:0.72, hdg:160, spd:6,  alive:true, track:[], laneHdg:160},
+  {id:'C-03',type:'ship-friendly',threat:'UNKNOWN', brg:260, rng:0.55, hdg:110, spd:12, alive:true, track:[], laneHdg:110},
+  {id:'C-04',type:'ship-hostile', threat:'HIGH',    brg:210, rng:0.62, hdg:250, spd:14, alive:true, track:[], laneHdg:250},
+  {id:'C-05',type:'ship-neutral', threat:'UNKNOWN', brg:320, rng:0.65, hdg:305, spd:8,  alive:true, track:[], laneHdg:305},
+  {id:'C-06',type:'ship-hostile', threat:'MED',     brg:75,  rng:0.80, hdg:195, spd:11, alive:true, track:[], laneHdg:195},
+  {id:'C-07',type:'sub-friendly', threat:'LOW',     brg:145, rng:0.50, hdg:300, spd:16, alive:true, track:[]},
+  {id:'C-08',type:'ship-neutral', threat:'LOW',     brg:30,  rng:0.70, hdg:160, spd:7,  alive:true, track:[], laneHdg:160},
+];
+
+// Remove dead contacts from array, keeping selContact/selTarget valid by ID
+function pruneDeadContacts(){
+  var selId = selContact>=0 && contacts[selContact] ? contacts[selContact].id : null;
+  var tgtId = selTarget>=0 && contacts[selTarget] ? contacts[selTarget].id : null;
+  contacts = contacts.filter(function(c){ return c.alive; });
+  selContact = selId ? contacts.findIndex(function(c){ return c.id===selId; }) : -1;
+  selTarget  = tgtId ? contacts.findIndex(function(c){ return c.id===tgtId; }) : -1;
+}
+
+// Periodically spawn new contacts that transit the zone
+function spawnContact(){
+  var types=['sub-hostile','sub-friendly','ship-neutral','ship-neutral','ship-neutral','ship-friendly','ship-hostile'];
+  var threats={
+    'sub-hostile':['HIGH','MED'],
+    'sub-friendly':['UNKNOWN','LOW'],
+    'ship-hostile':['HIGH','MED'],
+    'ship-neutral':['LOW','UNKNOWN'],
+    'ship-friendly':['LOW','UNKNOWN']
+  };
+  contactIdCounter++;
+  while(contacts.some(function(x){return x.id==='C-'+String(contactIdCounter).padStart(2,'0');})){
+    contactIdCounter++;
+  }
+  var t=types[Math.floor(Math.random()*types.length)];
+  var thrList=threats[t];
+  var thr=thrList[Math.floor(Math.random()*thrList.length)];
+  var isSub=t.indexOf('sub')>=0;
+  var spd=isSub?(8+Math.random()*18):(5+Math.random()*14);
+  var laneHdg, brg, hdg;
+  if(!isSub){
+    // Pick a shipping lane, spawn from the opposite side of its heading
+    var lane=SHIPPING_LANES[Math.floor(Math.random()*SHIPPING_LANES.length)];
+    laneHdg=lane.hdg;
+    // Entry bearing is roughly opposite the lane heading, with small spread
+    var entryDir=(laneHdg+180+360)%360;
+    brg=(entryDir+(Math.random()-0.5)*40+360)%360;
+    hdg=laneHdg+(Math.random()-0.5)*6; // lock onto lane with tiny wobble
+  } else {
+    // Subs enter from a random bearing at a roughly inward heading
+    brg=Math.random()*360;
+    hdg=(brg+150+Math.random()*60)%360;
+  }
+  var c={
+    id:'C-'+String(contactIdCounter).padStart(2,'0'),
+    type:t,threat:thr,
+    brg:brg,rng:0.94,
+    hdg:hdg,spd:spd,
+    alive:true,track:[]
+  };
+  if(!isSub) c.laneHdg=laneHdg;
+  contacts.push(c);
+  logEvt('NEW CONTACT '+c.id+' — '+c.type.toUpperCase()+' BRG '+Math.round(c.brg)+'°','lw');
+  renderContactTable();
+}
+
+// ========== CONTACT CLASSIFICATION ==========
+var typeColors={
+  'sub-hostile':'#ff4444',
+  'ship-hostile':'#ff4444',
+  'sub-friendly':'#44ff44',
+  'ship-friendly':'#44ff44',
+  'ship-neutral':'#4488ff'
+};
+var threatColors={'HIGH':'#ff4444','MED':'#ffaa00','LOW':'#44ff44','UNKNOWN':'#666'};
+function contactColor(c){
+  return typeColors[c.type]||'#ffaa00';
+}
+
+// ========== TIME ==========
+function etime(){
+  var e=Math.floor((Date.now()-ST)/1000);
+  return String(Math.floor(e/3600)).padStart(2,'0')+':'+String(Math.floor((e%3600)/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0')+'Z';
+}
+setInterval(function(){document.getElementById('stime').textContent=etime();},1000);
+
+function logEvt(msg,cls){
+  var el=document.getElementById('elog');
+  var d=document.createElement('div');d.className='ll';
+  d.innerHTML='<span class="lt">['+etime()+'] </span><span class="'+(cls||'lm')+'">'+msg+'</span>';
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+
+// ========== CONTACT TABLE ==========
+function renderContactTable(){
+  var seen={};
+  var aliveList=contacts.filter(function(c){
+    if(!c.alive||seen[c.id]) return false;
+    seen[c.id]=true; return true;
+  });
+  document.getElementById('contact-ct').textContent=aliveList.length;
+  var tbody=document.getElementById('ctbody');
+  tbody.innerHTML='';
+  var tblSelId = selContact>=0 && contacts[selContact] ? contacts[selContact].id : null;
+  var tblTgtId = selTarget>=0  && contacts[selTarget]  ? contacts[selTarget].id  : null;
+  aliveList.forEach(function(c){
+    var tr=document.createElement('tr');
+    var isSel=(c.id===tblSelId);
+    var isTgt=(c.id===tblTgtId);
+    tr.className=isTgt?'tgt':(isSel?'sel':'');
+    tr.setAttribute('data-cid',c.id);
+    var shortType=c.type.replace('sub-','SUB/').replace('ship-','SHP/').toUpperCase();
+    var rngKm=(c.rng*10).toFixed(1);
+    tr.innerHTML=
+      '<td class="cid" style="color:'+contactColor(c)+'">'+c.id+'</td>'+
+      '<td>'+shortType+'</td>'+
+      '<td>'+Math.round(c.brg)+'°</td>'+
+      '<td>'+rngKm+'km</td>'+
+      '<td>'+c.spd.toFixed(0)+'kt</td>'+
+      '<td><select class="threat-sel" onchange="setThreatById(\''+c.id+'\',this.value)" onclick="event.stopPropagation()">'+
+        ['HIGH','MED','LOW','UNKNOWN'].map(function(t){return '<option value="'+t+'"'+(t===c.threat?' selected':'')+'>'+t+'</option>';}).join('')+
+      '</select></td>'+
+      '<td><button class="tgt-btn'+(isTgt?' active':'')+'" onclick="designateTargetById(\''+c.id+'\',event)">'+(isTgt?'✓TGT':'TGT')+'</button></td>';
+    (function(cid){
+      tr.addEventListener('click',function(){
+        var idx=contacts.findIndex(function(x){return x.id===cid;});
+        if(idx>=0) selectContact(idx);
+      });
+    })(c.id);
+    tbody.appendChild(tr);
+  });
+}
+
+function setThreat(i,val){
+  contacts[i].threat=val;
+  logEvt('Contact '+contacts[i].id+' threat reclassified: '+val,'lw');
+  renderContactTable();
+}
+function setThreatById(cid,val){
+  var c=contacts.find(function(x){return x.id===cid;});
+  if(!c) return;
+  c.threat=val;
+  logEvt('Contact '+cid+' threat reclassified: '+val,'lw');
+  renderContactTable();
+}
+
+function designateTarget(i,e){
+  if(e) e.stopPropagation();
+  if(!contacts[i]||!contacts[i].alive) return;
+  if(contacts[i].type.indexOf('friendly')>=0){
+    logEvt('CANNOT designate '+contacts[i].id+' as target — FRIENDLY.','lw');
+    return;
+  }
+  selTarget=i; selContact=i;
+  updateTMA(); renderContactTable();
+  document.getElementById('tgt-hdr').textContent=contacts[i].id;
+  document.getElementById('tgt-hdr').style.color='#ff4444';
+  logEvt('TARGET DESIGNATED: '+contacts[i].id+' ['+contacts[i].type.toUpperCase()+'] BRG '+Math.round(contacts[i].brg)+'° — '+contacts[i].threat,'lc');
+  updateFireState();
+}
+function designateTargetById(cid,e){
+  if(e) e.stopPropagation();
+  var i=contacts.findIndex(function(x){return x.id===cid;});
+  if(i<0||!contacts[i].alive) return;
+  if(contacts[i].type.indexOf('friendly')>=0){
+    logEvt('CANNOT designate '+cid+' as target — FRIENDLY.','lw');
+    return;
+  }
+  selTarget=i; selContact=i;
+  updateTMA(); renderContactTable();
+  document.getElementById('tgt-hdr').textContent=cid;
+  document.getElementById('tgt-hdr').style.color='#ff4444';
+  logEvt('TARGET DESIGNATED: '+cid+' ['+contacts[i].type.toUpperCase()+'] BRG '+Math.round(contacts[i].brg)+'° — '+contacts[i].threat,'lc');
+  updateFireState();
+}
+
+function selectContact(i){
+  selContact=i;
+  updateTMA();
+  renderContactTable();
+  logEvt('Contact '+contacts[i].id+' selected for TMA solution.','lm');
+}
+
+function updateTMA(){
+  var c=contacts[selContact];
+  if(!c||!c.alive){
+    document.getElementById('sbrg').textContent='---';
+    document.getElementById('srng').textContent='---';
+    document.getElementById('sspd').textContent='---';
+    document.getElementById('spk').textContent='---';
+    return;
+  }
+  document.getElementById('sbrg').textContent=c.brg.toFixed(1)+'°';
+  document.getElementById('srng').textContent=(c.rng*10).toFixed(1)+'km';
+  document.getElementById('sspd').textContent=c.spd.toFixed(1)+'kt';
+  var pk=c.threat==='HIGH'?75+Math.round(Math.random()*15):c.threat==='MED'?55+Math.round(Math.random()*15):35+Math.round(Math.random()*15);
+  document.getElementById('spk').textContent=pk+'%';
+  document.getElementById('spk').style.color=pk>80?'#ff4444':pk>60?'#ffaa00':'#44ff44';
+}
+
+// ========== TUBE FUNCTIONS ==========
+function tubeEl(i){return document.getElementById('te'+i);}
+
+function changeWeapon(i,val){
+  if(tubeStates[i]==='fired'||tubeStates[i]==='flooding'||tubeStates[i]==='rdy'){
+    logEvt('Cannot change weapon — tube '+(i+1)+' is '+tubeStates[i].toUpperCase()+'.','lw');
+    document.getElementById('wsel'+i).value=tubeWeapons[i]||'EMPTY';
+    return;
+  }
+  if(val==='EMPTY'){
+    tubeStates[i]='empty';tubeWeapons[i]='';
+    document.getElementById('ttype'+i).textContent='-- EMPTY --';
+    document.getElementById('ts'+i).textContent='EMPTY';
+    document.getElementById('ts'+i).style.color='#444';
+    document.getElementById('tf'+i).style.width='0%';
+    document.getElementById('tf'+i).style.background='#444';
+    tubeEl(i).className='tube'+(selTube===i?' sel':'');
+    logEvt('Tube '+(i+1)+': Empty.','lw');
+  } else {
+    tubeStates[i]='loaded';tubeWeapons[i]=val;
+    document.getElementById('ttype'+i).textContent=val;
+    document.getElementById('ts'+i).textContent='LOADED';
+    document.getElementById('ts'+i).style.color='#00aa28';
+    document.getElementById('tf'+i).style.width='100%';
+    document.getElementById('tf'+i).style.background='#00aa28';
+    tubeEl(i).className='tube loaded'+(selTube===i?' sel':'');
+    logEvt('Tube '+(i+1)+': '+val+' loaded.','lm');
+  }
+  if(selTube===i) updateFireState();
+}
+
+function selectTube(i){
+  selTube=i;
+  document.querySelectorAll('.tube').forEach(function(t,j){t.classList.toggle('sel',j===i);});
+  var n=i+1;
+  ['floodlbl','doorlbl','presetlbl'].forEach(function(id){document.getElementById(id).textContent=n;});
+  document.getElementById('actube-hdr').textContent='T'+n;
+  logEvt('Tube '+n+' selected.','lm');
+  updateFireState();
+}
+
+function floodTube(){
+  var i=selTube;
+  if(tubeStates[i]==='empty'){logEvt('Tube '+(i+1)+': EMPTY — load weapon first.','lw');return;}
+  if(tubeStates[i]==='fired'){logEvt('Tube '+(i+1)+': Expended.','lw');return;}
+  if(tubeStates[i]==='rdy'){logEvt('Tube '+(i+1)+': Already READY.','lm');return;}
+  if(tubeStates[i]==='flooding'){return;}
+  tubeStates[i]='flooding';
+  tubeEl(i).className='tube flood sel';
+  document.getElementById('ts'+i).textContent='FLOODING...';
+  document.getElementById('ts'+i).style.color='#ffaa00';
+  document.getElementById('tf'+i).style.width='50%';
+  document.getElementById('tf'+i).style.background='#ffaa00';
+  logEvt('Tube '+(i+1)+': Flood & equalize initiated.','lw');
+  setTimeout(function(){
+    tubeStates[i]='rdy';
+    tubeEl(i).className='tube rdy'+(selTube===i?' sel':'');
+    document.getElementById('ts'+i).textContent='READY';
+    document.getElementById('ts'+i).style.color='#00ff41';
+    document.getElementById('tf'+i).style.width='100%';
+    document.getElementById('tf'+i).style.background='#00ff41';
+    ILs[3]=true;document.getElementById('il3').classList.add('on');
+    if(selTube===i) updateFireState();
+    logEvt('Tube '+(i+1)+': READY.','lm');
+  },3500);
+}
+
+function openDoor(){logEvt('Tube '+(selTube+1)+': Outer door OPEN.','lw');}
+function uploadPreset(){
+  logEvt('Preset upload — Tube '+(selTube+1)+'.','lm');
+  setTimeout(function(){logEvt('Preset COMPLETE.','lm');},1200);
+}
+
+function toggleIL(i){
+  ILs[i]=!ILs[i];
+  document.getElementById('il'+i).classList.toggle('on',ILs[i]);
+  var names=['FIRE AUTH KEY','CO CONFIRM','XO CONFIRM','FLOOD CONFIRMED'];
+  logEvt('Interlock '+names[i]+': '+(ILs[i]?'ENABLED':'DISABLED'),'lw');
+  updateFireState();
+}
+
+function updateFireState(){
+  var tubeOk=tubeStates[selTube]==='rdy'||tubeStates[selTube]==='loaded';
+  var targetOk=selTarget>=0&&contacts[selTarget]&&contacts[selTarget].alive;
+  var all=ILs.every(function(v){return v;})&&tubeOk;
+  var fa=document.getElementById('fa'),fb=document.getElementById('fb');
+  document.getElementById('arct').textContent=ILs.filter(Boolean).length;
+  fa.disabled=!all;fb.disabled=!all;
+  if(all&&!fireAon){fa.classList.add('arm');fb.classList.add('arm');}
+  if(!all){fa.classList.remove('arm','pressed');fb.classList.remove('arm','pressed');fireAon=false;}
+  if(all) logEvt('ALL INTERLOCKS CONFIRMED — WEAPONS FREE','lc');
+}
+
+function fireA(){
+  if(!document.getElementById('fa').disabled){
+    fireAon=true;
+    document.getElementById('fa').classList.remove('arm');
+    document.getElementById('fa').classList.add('pressed');
+    document.getElementById('fb').classList.add('arm');
+    logEvt('TRIGGER A — Awaiting TRIGGER B.','lw');
+  }
+}
+
+function fireB(){
+  if(document.getElementById('fb').disabled) return;
+  if(!fireAon){logEvt('TRIGGER B without A — Aborted.','lw');return;}
+  if(selTarget<0){logEvt('No target designated — Aborted.','lw');return;}
+  var i=selTube;
+  var wname=tubeWeapons[i]||'WEAPON';
+  var tgt=contacts[selTarget];
+  logEvt('WEAPON AWAY — '+wname+' TUBE '+(i+1)+' → '+tgt.id,'lc');
+  tubeStates[i]='fired';
+  tubeEl(i).className='tube fired';
+  document.getElementById('ts'+i).textContent='FIRED';
+  document.getElementById('ts'+i).style.color='#ff4444';
+  document.getElementById('tf'+i).style.width='100%';
+  document.getElementById('tf'+i).style.background='#ff4444';
+  var spd=parseInt(document.getElementById('wsl').value)||35;
+  var torp={
+    tube:i,contactIdx:selTarget,alive:true,
+    id:'T-0'+(i+1),
+    brg:tgt.brg,
+    rng_frac:0.04,
+    spd_kt:spd,
+    wire_intact:true,
+    wire_paid:0
+  };
+  torpedoes.push(torp);
+  activeWireTorp=torp;
+  document.getElementById('wt-id').textContent=torp.id+' → '+tgt.id;
+  document.getElementById('wt-id').style.color='#00ff41';
+  document.getElementById('ws-disp').textContent=spd+'kt';
+  document.getElementById('wst').textContent='INTACT — GUIDING';
+  document.getElementById('wpo').textContent='0m';
+  fireAon=false;
+  var fa=document.getElementById('fa'),fb=document.getElementById('fb');
+  fa.disabled=true;fb.disabled=true;
+  fa.classList.remove('arm','pressed');fb.classList.remove('arm','pressed');
+  ILs=[false,false,false,false];
+  document.querySelectorAll('.tog').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('arct').textContent='0';
+  // hide reload section if it was showing for this tube
+  var sec=document.getElementById('reload-sec');
+  if(parseInt(sec.dataset.tube)===i) sec.style.display='none';
+}
+
+// ========== WIRE GUIDANCE ==========
+function wireCmd(dir){
+  if(!activeWireTorp||!activeWireTorp.alive){logEvt('Wire: No active weapon.','lw');return;}
+  if(!activeWireTorp.wire_intact){logEvt('Wire: CUT.','lw');return;}
+  var delta=1.5;
+  if(dir==='PORT') activeWireTorp.brg=(activeWireTorp.brg-delta+360)%360;
+  if(dir==='STBD') activeWireTorp.brg=(activeWireTorp.brg+delta)%360;
+  if(dir==='PORT'||dir==='STBD') logEvt('Wire: '+dir+' → '+Math.round(activeWireTorp.brg)+'°','lm');
+  else logEvt('Wire: '+dir,'lm');
+  flashWireBtn(dir);
+}
+function flashWireBtn(dir){
+  var map={PORT:'wleft',STBD:'wright',SHALLOW:'wup',DEEP:'wdn'};
+  var el=document.getElementById(map[dir]);if(!el)return;
+  el.classList.add('active');setTimeout(function(){el.classList.remove('active');},200);
+}
+function wireSpdSet(v){
+  document.getElementById('wsd').textContent=v+'kt';
+  document.getElementById('ws-disp').textContent=v+'kt';
+  if(activeWireTorp){activeWireTorp.spd_kt=parseInt(v);logEvt('Wire speed: '+v+'kt','lm');}
+}
+function cutWire(){
+  if(!activeWireTorp){logEvt('No active wire.','lw');return;}
+  var tubeIdx=activeWireTorp.tube;
+  logEvt('WIRE CUT — '+activeWireTorp.id+' autonomous.','lw');
+  document.getElementById('wst').textContent='CUT — AUTONOMOUS';
+  activeWireTorp.wire_intact=false;activeWireTorp=null;
+  showReloadOption(tubeIdx);
+}
+function showReloadOption(tubeIdx){
+  var sec=document.getElementById('reload-sec');
+  // don't reset if already showing for this tube (e.g. wire paid out then detonation)
+  if(sec.style.display==='block'&&parseInt(sec.dataset.tube)===tubeIdx) return;
+  var n=tubeIdx+1;
+  document.getElementById('reload-tube-lbl').textContent=n;
+  document.getElementById('reload-btn-lbl').textContent=n;
+  sec.style.display='block';
+  sec.dataset.tube=tubeIdx;
+}
+function reloadTube(){
+  var sec=document.getElementById('reload-sec');
+  var tubeIdx=parseInt(sec.dataset.tube);
+  var wname=document.getElementById('reload-wsel').value;
+  tubeStates[tubeIdx]='loading';
+  tubeEl(tubeIdx).className='tube flood'+(selTube===tubeIdx?' sel':'');
+  document.getElementById('ts'+tubeIdx).textContent='RELOADING...';
+  document.getElementById('ts'+tubeIdx).style.color='#ffaa00';
+  document.getElementById('tf'+tubeIdx).style.width='30%';
+  document.getElementById('tf'+tubeIdx).style.background='#ffaa00';
+  logEvt('Tube '+(tubeIdx+1)+': Reloading '+wname+' — standby.','lw');
+  sec.style.display='none';
+  document.getElementById('wsel'+tubeIdx).value=wname;
+  setTimeout(function(){
+    tubeWeapons[tubeIdx]=wname;
+    tubeStates[tubeIdx]='loaded';
+    document.getElementById('ttype'+tubeIdx).textContent=wname;
+    document.getElementById('ts'+tubeIdx).textContent='LOADED';
+    document.getElementById('ts'+tubeIdx).style.color='#00aa28';
+    document.getElementById('tf'+tubeIdx).style.width='100%';
+    document.getElementById('tf'+tubeIdx).style.background='#00aa28';
+    tubeEl(tubeIdx).className='tube loaded'+(selTube===tubeIdx?' sel':'');
+    // Reset flood interlock — user must flood manually
+    ILs[3]=false;document.getElementById('il3').classList.remove('on');
+    if(selTube===tubeIdx) updateFireState();
+    logEvt('Tube '+(tubeIdx+1)+': '+wname+' LOADED — flood & equalize required before firing.','lm');
+  },4000);
+}
+function wireHoming(){
+  if(!activeWireTorp){logEvt('No active torpedo.','lw');return;}
+  logEvt(activeWireTorp.id+': Homing enabled.','lm');
+}
+
+// ========== KEYBINDINGS ==========
+document.addEventListener('keydown',function(e){
+  var map={'8':'SHALLOW','2':'DEEP','4':'PORT','6':'STBD',
+           'Numpad8':'SHALLOW','Numpad2':'DEEP','Numpad4':'PORT','Numpad6':'STBD'};
+  if(map[e.key]||map[e.code]) wireCmd(map[e.key]||map[e.code]);
+});
+
+// ========== CANVAS SETUP ==========
+var tacC=document.getElementById('tac');
+var tacX=tacC.getContext('2d');
+var SONAR_SZ=174; // kept for compatibility with drawSonar refs (unused)
+
+function resizeTac(){
+  var overhead = 260;
+  var maxByHeight = Math.max(280, Math.min(500, window.innerHeight - overhead));
+  var panelW = tacC.parentElement ? tacC.parentElement.clientWidth - 24 : 460;
+  if(panelW <= 0) panelW = 460;
+  var sz = Math.round(Math.min(panelW, maxByHeight));
+  sz = Math.max(280, sz);
+  tacC.width = sz; tacC.height = sz;
+  tacC.style.width = sz + 'px'; tacC.style.height = sz + 'px';
+  SONAR_SZ = sz;
+}
+// Defer so DOM layout is complete before measuring clientWidth
+window.addEventListener('load', function(){ resizeTac(); });
+requestAnimationFrame(function(){ resizeTac(); });
+window.addEventListener('resize', resizeTac);
+
+// Canvas click to select contact
+tacC.addEventListener('click',function(e){
+  var rect=tacC.getBoundingClientRect();
+  var mx=(e.clientX-rect.left)*(tacC.width/rect.width);
+  var my=(e.clientY-rect.top)*(tacC.height/rect.height);
+  var W=tacC.width,H=tacC.height;
+  var cx=W/2,cy=H/2;
+  var R=Math.min(W,H)*0.40;
+  var best=-1,bestD=20;
+  contacts.forEach(function(c,i){
+    if(!c.alive) return;
+    var ang=(c.brg-90)*Math.PI/180;
+    var px=cx+Math.cos(ang)*R*c.rng;
+    var py=cy+Math.sin(ang)*R*c.rng;
+    var d=Math.sqrt((mx-px)*(mx-px)+(my-py)*(my-py));
+    if(d<bestD){bestD=d;best=i;}
+  });
+  if(best>=0){
+    selectContact(best);
+    logEvt('Canvas: '+contacts[best].id+' selected.','lm');
+  }
+});
+
+// Right-click on tac canvas to designate target
+tacC.addEventListener('contextmenu',function(e){
+  e.preventDefault();
+  var rect=tacC.getBoundingClientRect();
+  var mx=(e.clientX-rect.left)*(tacC.width/rect.width);
+  var my=(e.clientY-rect.top)*(tacC.height/rect.height);
+  var W=tacC.width,H=tacC.height;
+  var cx=W/2,cy=H/2;
+  var R=Math.min(W,H)*0.40;
+  var best=-1,bestD=20;
+  contacts.forEach(function(c,i){
+    if(!c.alive) return;
+    var ang=(c.brg-90)*Math.PI/180;
+    var px=cx+Math.cos(ang)*R*c.rng;
+    var py=cy+Math.sin(ang)*R*c.rng;
+    var d=Math.sqrt((mx-px)*(mx-px)+(my-py)*(my-py));
+    if(d<bestD){bestD=d;best=i;}
+  });
+  if(best>=0) designateTarget(best,null);
+});
+
+// ========== CONTACT MOVEMENT ==========
+// Display represents 20km diameter. rng=1 means 10km from own ship.
+// Speed in knots -> km/s at 60fps: 1kt=0.000514 km/s -> per frame /60
+var MOVE_SCALE = 0.000514 / 10 / 60; // fraction of 10km per frame per knot
+
+// Shipping lanes: entry bearing -> exit bearing transit corridors.
+// Surface ships lock onto these and hold course through the zone.
+// Subs patrol more freely with slow course changes.
+var SHIPPING_LANES = [
+  {hdg:160, label:'N-S LANE'},
+  {hdg:250, label:'E-W LANE'},
+  {hdg:195, label:'NNE-SSW LANE'},
+  {hdg:110, label:'NW-SE LANE'},
+  {hdg:305, label:'SE-NW LANE'},
+];
+
+function moveContacts(){
+  contacts.forEach(function(c){
+    if(!c.alive) return;
+    var isSub = c.type.indexOf('sub') >= 0;
+    if(isSub){
+      // Submarines: occasional slow course change to simulate patrol
+      if(Math.random() < 0.004) c.hdg = (c.hdg + (Math.random()-0.5)*30 + 360) % 360;
+    } else {
+      // Surface ships: steer toward their lane heading with minor sea-state wobble
+      if(c.laneHdg !== undefined){
+        var diff = ((c.laneHdg - c.hdg + 540) % 360) - 180;
+        c.hdg = (c.hdg + Math.sign(diff)*Math.min(Math.abs(diff),0.3) + (Math.random()-0.5)*0.5 + 360) % 360;
+      }
+    }
+    var dist = c.spd * MOVE_SCALE;
+    var brgRad = c.hdg * Math.PI / 180;
+    var x = c.rng * Math.sin(c.brg * Math.PI / 180);
+    var y = -c.rng * Math.cos(c.brg * Math.PI / 180);
+    x += Math.sin(brgRad) * dist;
+    y += Math.cos(brgRad) * dist;
+    var newRng = Math.sqrt(x*x + y*y);
+    // Contacts that exit the zone are lost — new traffic spawns to maintain density
+    if(newRng > 1.02){
+      c.alive = false;
+      logEvt('Contact '+c.id+' — LOST (exited zone).','lt');
+      pruneDeadContacts();
+      renderContactTable();
+      return;
+    }
+    c.brg = (Math.atan2(x,-y)*180/Math.PI+360) % 360;
+    c.rng = newRng;
+  });
+}
+
+var frameCount=0;
+// spawn schedule
+var spawnTimer=0;
+var SPAWN_INTERVAL=900; // frames (~15s at 60fps) — keeps count healthy as ships transit out
+
+
+// ========== DRAW TAC ==========
+function drawTac(){
+  var W=tacC.width,H=tacC.height;
+  var cx=W/2,cy=H/2;
+  tacX.fillStyle='#020a02';tacX.fillRect(0,0,W,H);
+  // grid
+  tacX.strokeStyle='#0d2a0d';tacX.lineWidth=0.5;
+  for(var x=0;x<W;x+=W/10){tacX.beginPath();tacX.moveTo(x,0);tacX.lineTo(x,H);tacX.stroke();}
+  for(var y=0;y<H;y+=H/10){tacX.beginPath();tacX.moveTo(0,y);tacX.lineTo(W,y);tacX.stroke();}
+  // range rings
+  var R=Math.min(W,H)*0.40;
+  [0.25,0.5,0.75,1].forEach(function(f){
+    tacX.beginPath();tacX.arc(cx,cy,R*f,0,Math.PI*2);
+    tacX.strokeStyle=f===1?'#1a5a1a':'#122a12';tacX.lineWidth=f===1?1.2:0.8;tacX.stroke();
+  });
+  // range labels
+  tacX.fillStyle='#1a6a1a';tacX.font='8px Courier New';
+  tacX.fillText('2.5km',cx+2,cy-R*0.25+4);
+  tacX.fillText('5km',cx+2,cy-R*0.5+4);
+  tacX.fillText('7.5km',cx+2,cy-R*0.75+4);
+  tacX.fillText('10km',cx+2,cy-R+4);
+
+  // bearing tick marks and angle labels every 30° on outer ring
+  var tacCardinals={0:'N',90:'E',180:'S',270:'W'};
+  for(var deg=0;deg<360;deg+=30){
+    var rad=(deg-90)*Math.PI/180;
+    var tickLen=deg%90===0?9:5;
+    var tx1=cx+Math.cos(rad)*R;
+    var ty1=cy+Math.sin(rad)*R;
+    var tx2=cx+Math.cos(rad)*(R-tickLen);
+    var ty2=cy+Math.sin(rad)*(R-tickLen);
+    tacX.beginPath();tacX.moveTo(tx1,ty1);tacX.lineTo(tx2,ty2);
+    tacX.strokeStyle=deg%90===0?'#00cc33':'#1a5a1a';tacX.lineWidth=deg%90===0?1.5:0.9;tacX.stroke();
+    var lx=cx+Math.cos(rad)*(R+10);
+    var ly=cy+Math.sin(rad)*(R+10);
+    var label=tacCardinals[deg]!==undefined?tacCardinals[deg]:String(deg);
+    tacX.fillStyle=deg%90===0?'#00ff41':'#00aa28';
+    tacX.font=(deg%90===0?'bold ':'')+'8px Courier New';
+    tacX.textAlign='center';tacX.textBaseline='middle';
+    tacX.fillText(label,lx,ly);
+  }
+  tacX.textAlign='left';tacX.textBaseline='alphabetic';
+
+  // draw contacts — deduplicated by ID to prevent double-draw
+  var tacSelId = selContact>=0 && contacts[selContact] ? contacts[selContact].id : null;
+  var tacTgtId = selTarget>=0  && contacts[selTarget]  ? contacts[selTarget].id  : null;
+  var seenTacIds={};
+  contacts.forEach(function(c){
+    if(!c.alive) return;
+    if(seenTacIds[c.id]) return;
+    seenTacIds[c.id]=true;
+    var ang=(c.brg-90)*Math.PI/180;
+    var px=cx+Math.cos(ang)*R*c.rng;
+    var py=cy+Math.sin(ang)*R*c.rng;
+    var col=contactColor(c);
+    var isSel=c.id===tacSelId;
+    var isTgt=c.id===tacTgtId;
+
+    // bearing line from origin (dashed, faint)
+    tacX.setLineDash([3,4]);
+    tacX.strokeStyle='rgba('+hexToRgb(col)+',0.2)';
+    tacX.lineWidth=0.7;
+    tacX.beginPath();tacX.moveTo(cx,cy);tacX.lineTo(px,py);tacX.stroke();
+    tacX.setLineDash([]);
+
+    // heading vector
+    var hdgAng=(c.hdg-90)*Math.PI/180;
+    var vecLen=14+c.spd*0.5;
+    tacX.beginPath();tacX.moveTo(px,py);
+    tacX.lineTo(px+Math.cos(hdgAng)*vecLen,py+Math.sin(hdgAng)*vecLen);
+    tacX.strokeStyle='rgba('+hexToRgb(col)+',0.7)';tacX.lineWidth=1;tacX.stroke();
+    // arrowhead
+    var ax=px+Math.cos(hdgAng)*vecLen;
+    var ay=py+Math.sin(hdgAng)*vecLen;
+    tacX.beginPath();
+    tacX.moveTo(ax,ay);
+    tacX.lineTo(ax-Math.cos(hdgAng-0.4)*5,ay-Math.sin(hdgAng-0.4)*5);
+    tacX.lineTo(ax-Math.cos(hdgAng+0.4)*5,ay-Math.sin(hdgAng+0.4)*5);
+    tacX.closePath();tacX.fillStyle=col;tacX.fill();
+
+    // contact symbol
+    var sym_r=isTgt?8:isSel?7:5;
+    if(c.type.indexOf('sub')>=0){
+      // diamond for sub
+      tacX.beginPath();
+      tacX.moveTo(px,py-sym_r);tacX.lineTo(px+sym_r*0.7,py);
+      tacX.lineTo(px,py+sym_r);tacX.lineTo(px-sym_r*0.7,py);tacX.closePath();
+      tacX.strokeStyle=col;tacX.lineWidth=isTgt?2:1.2;tacX.stroke();
+      if(isTgt){tacX.fillStyle='rgba(255,68,68,0.15)';tacX.fill();}
+      else if(isSel){tacX.fillStyle='rgba('+hexToRgb(col)+',0.12)';tacX.fill();}
+    } else {
+      // circle for surface ship
+      tacX.beginPath();tacX.arc(px,py,sym_r,0,Math.PI*2);
+      tacX.strokeStyle=col;tacX.lineWidth=isTgt?2:1.2;tacX.stroke();
+      if(isTgt){tacX.fillStyle='rgba(255,68,68,0.15)';tacX.fill();}
+      else if(isSel){tacX.fillStyle='rgba('+hexToRgb(col)+',0.12)';tacX.fill();}
+    }
+
+    // target ring
+    if(isTgt){
+      tacX.beginPath();tacX.arc(px,py,sym_r+5,0,Math.PI*2);
+      tacX.strokeStyle='rgba(255,68,68,0.6)';tacX.lineWidth=1;
+      tacX.setLineDash([2,2]);tacX.stroke();tacX.setLineDash([]);
+    }
+
+    // label
+    tacX.fillStyle=col;tacX.font='7px Courier New';
+    tacX.fillText(c.id+(isTgt?' ◎':''),px+sym_r+2,py-3);
+    if(isTgt||isSel){
+      tacX.fillStyle='rgba('+hexToRgb(col)+',0.6)';tacX.font='6px Courier New';
+      tacX.fillText(c.spd.toFixed(0)+'kt '+Math.round(c.hdg)+'°',px+sym_r+2,py+7);
+    }
+  });
+
+  // torpedoes
+  torpedoes.forEach(function(t){
+    if(!t.alive) return;
+    var spd_ms=t.spd_kt*0.5144;
+    // faster visual — halved reference distance for snappier tracking
+    var delta_frac=(spd_ms/60)/3500; // 3.5km reference (noticeably faster visual)
+    t.rng_frac+=delta_frac;
+    if(t.wire_intact){
+      t.wire_paid+=spd_ms/60;
+      document.getElementById('wpo').textContent=Math.round(t.wire_paid)+'m';
+      if(t.wire_paid>=WIRE_MAX){
+        t.wire_intact=false;
+        if(activeWireTorp===t) activeWireTorp=null;
+        logEvt(t.id+': Wire paid out — autonomous.','lw');
+        document.getElementById('wst').textContent='PAID OUT';
+        showReloadOption(t.tube);
+      }
+    }
+    var ang=(t.brg-90)*Math.PI/180;
+    var ttx=cx+Math.cos(ang)*R*t.rng_frac;
+    var tty=cy+Math.sin(ang)*R*t.rng_frac;
+    // wire trail
+    if(t.wire_intact){
+      tacX.beginPath();tacX.moveTo(cx,cy);tacX.lineTo(ttx,tty);
+      tacX.strokeStyle='rgba(255,255,160,0.2)';tacX.lineWidth=0.6;tacX.stroke();
+    }
+    // torpedo symbol
+    tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
+    tacX.fillStyle='#ffffff';tacX.fill();
+    tacX.beginPath();tacX.moveTo(ttx,tty);
+    tacX.lineTo(ttx+Math.cos(ang)*10,tty+Math.sin(ang)*10);
+    tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
+    tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='7px Courier New';
+    tacX.fillText(t.id,ttx+5,tty-5);
+    // intercept check
+    var ct=contacts[t.contactIdx];
+    if(ct&&ct.alive){
+      var ctang=(ct.brg-90)*Math.PI/180;
+      var ctx2=cx+Math.cos(ctang)*R*ct.rng;
+      var cty2=cy+Math.sin(ctang)*R*ct.rng;
+      var dx=ttx-ctx2,dy=tty-cty2;
+      if(Math.sqrt(dx*dx+dy*dy)<16){
+        ct.alive=false;t.alive=false;
+        if(activeWireTorp===t) activeWireTorp=null;
+        explosions.push({x:ctx2,y:cty2,r:0,max:42,alive:true});
+        logEvt('DETONATION: '+t.id+' — '+ct.id+' DESTROYED','lc');
+        document.getElementById('wst').textContent='DETONATED';
+        document.getElementById('wt-id').textContent='NO WEAPON IN WIRE';
+        document.getElementById('wt-id').style.color='#ffaa00';
+        if(selTarget===t.contactIdx){selTarget=-1;document.getElementById('tgt-hdr').textContent='NONE';document.getElementById('tgt-hdr').style.color='#ffaa00';}
+        pruneDeadContacts();
+        renderContactTable();
+        showReloadOption(t.tube);
+      }
+    }
+    if(t.rng_frac>1.5){t.alive=false;showReloadOption(t.tube);}
+  });
+
+  // explosions
+  explosions.forEach(function(ex){
+    if(!ex.alive) return;
+    ex.r+=2.5;
+    tacX.beginPath();tacX.arc(ex.x,ex.y,ex.r,0,Math.PI*2);
+    tacX.strokeStyle='rgba(255,'+Math.max(0,160-ex.r*3)+',0,'+(1-ex.r/ex.max)+')';
+    tacX.lineWidth=2.5;tacX.stroke();
+    // inner flash
+    if(ex.r<12){tacX.beginPath();tacX.arc(ex.x,ex.y,ex.r*0.5,0,Math.PI*2);tacX.fillStyle='rgba(255,255,200,'+(0.6-ex.r*0.05)+')';tacX.fill();}
+    if(ex.r>=ex.max) ex.alive=false;
+  });
+
+  // own ship
+  tacX.save();tacX.translate(cx,cy);
+  tacX.beginPath();tacX.moveTo(0,-9);tacX.lineTo(-5,6);tacX.lineTo(0,3);tacX.lineTo(5,6);tacX.closePath();
+  tacX.fillStyle='#00ff41';tacX.fill();tacX.restore();
+  tacX.fillStyle='#003800';tacX.font='8px Courier New';tacX.fillText('OWNSHIP',cx+8,cy+14);
+
+  // legend: sub=diamond, ship=circle
+  tacX.fillStyle='#1a6a1a';tacX.font='8px Courier New';
+  tacX.fillText('◈=SUB  ○=SHIP  ◎=TARGET',6,H-5);
+  tacX.fillText('LClick=Select  RClick=Designate Target',6,H-17);
+
+  tacTimer++;
+  if(tacTimer%120===0&&selContact>=0){updateTMA();}
+}
+
+function hexToRgb(hex){
+  // simple hex to r,g,b string
+  if(hex==='#ff4444') return '255,68,68';
+  if(hex==='#44ff44') return '68,255,68';
+  if(hex==='#4488ff') return '68,136,255';
+  if(hex==='#ffaa00') return '255,170,0';
+  return '0,255,65';
+}
+
+// ========== MAIN LOOP ==========
+function loop(){
+  frameCount++;
+  moveContacts();
+  drawTac();
+  spawnTimer++;
+  if(spawnTimer>=SPAWN_INTERVAL){
+    spawnTimer=0;
+    pruneDeadContacts();
+    var alive=contacts.filter(function(c){return c.alive;}).length;
+    if(alive<12) spawnContact();
+  }
+  requestAnimationFrame(loop);
+}
+
+// Initial table render + select first contact
+renderContactTable();
+selectContact(0);
+resizeTac(); // final size correction after full DOM paint
+loop();
+
+// Periodic TMA updates
+setInterval(function(){
+  if(selContact>=0&&contacts[selContact]&&contacts[selContact].alive) updateTMA();
+},2000);
+</script>
+
+<!-- ===== TUTORIAL BUTTON (fixed bottom-right) ===== -->
+<div style="text-align:center;margin:10px 0 4px">
+  <button onclick="document.getElementById('tutorial-section').scrollIntoView({behavior:'smooth'})"
+    style="background:transparent;border:2px solid #00cc33;color:#00ff41;font-family:'Courier New',monospace;
+           font-size:11px;letter-spacing:3px;padding:7px 28px;cursor:pointer;text-transform:uppercase;
+           transition:all .2s;box-shadow:0 0 10px rgba(0,255,65,0.15)"
+    onmouseover="this.style.background='#001800';this.style.boxShadow='0 0 18px rgba(0,255,65,0.35)'"
+    onmouseout="this.style.background='transparent';this.style.boxShadow='0 0 10px rgba(0,255,65,0.15)'">
+    ▼ &nbsp; TUTORIAL &nbsp; ▼
+  </button>
+</div>
+
+<!-- ===== TUTORIAL SECTION ===== -->
+<div id="tutorial-section" style="background:#040a04;border:1px solid #1a4a1a;border-top:2px solid #00cc33;
+     padding:18px 16px 24px;margin-top:6px;font-family:'Courier New',monospace;color:#00bb2e;max-width:2000px">
+
+  <!-- Header -->
+  <div style="font-size:13px;font-weight:bold;color:#00ff41;letter-spacing:3px;border-bottom:1px solid #153a15;
+       padding-bottom:8px;margin-bottom:16px">
+    ⬡ &nbsp; SEA/SKY-6 CMS — OPERATOR QUICK-REFERENCE GUIDE
+    <span style="font-size:8px;color:#006a14;letter-spacing:2px;float:right;padding-top:3px">REV 17 — UNCLASSIFIED SIM</span>
+  </div>
+
+  <!-- Two-column layout for tutorial -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- STEP 1 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">01</span> &nbsp; CONTACT LIST
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          The <span style="color:#00ff41">CONTACT LIST</span> (top-left) shows all detected vessels in sensor range.<br>
+          • <span style="color:#ff4444">■ RED</span> = Hostile &nbsp;|&nbsp; <span style="color:#ffaa00">■ AMBER</span> = Unknown<br>
+          • <span style="color:#44ff44">■ GREEN</span> = Friendly &nbsp;|&nbsp; <span style="color:#4488ff">■ BLUE</span> = Neutral<br>
+          • <strong style="color:#00ff41">Click any row</strong> to select a contact and load its TMA data.<br>
+          • Use the <span style="color:#ffaa00">THREAT</span> dropdown per row to reclassify threat level.<br>
+          • Hit <span style="color:#ff4444">TGT</span> button on a row (or right-click on the plot) to designate that contact as your fire target. Friendly contacts cannot be designated.
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">02</span> &nbsp; TACTICAL FIRE CONTROL PLOT
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          The circular <span style="color:#00ff41">TACTICAL PLOT</span> (top-right of left panel) is your live situational display.<br>
+          • <strong style="color:#00ff41">◈ Diamond</strong> = Submarine &nbsp;|&nbsp; <strong style="color:#00ff41">○ Circle</strong> = Surface Ship<br>
+          • <strong style="color:#ff4444">◎ Ring</strong> around a symbol = currently designated target<br>
+          • <strong style="color:#00ff41">Left-click</strong> a symbol to select it (loads TMA panel)<br>
+          • <strong style="color:#ff4444">Right-click</strong> a symbol to immediately designate it as your fire target<br>
+          • Your own submarine (OWNSHIP) is the green arrowhead at the center.<br>
+          • Fired torpedoes appear as <span style="color:#ffffff">white dots</span> with a direction vector; a thin yellow line indicates an active wire-guided weapon.
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">03</span> &nbsp; TMA — TARGET MOTION ANALYSIS
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          When a contact is selected, the <span style="color:#00ff41">TMA PANEL</span> (below the contact list, if visible) updates automatically every 2 seconds.<br>
+          • Displays computed <span style="color:#00ff41">BRG</span> (bearing), <span style="color:#00ff41">RNG</span> (range in km), <span style="color:#00ff41">SPD</span> (speed in knots), and <span style="color:#00ff41">P(K)</span> (probability of kill).<br>
+          • P(K) is colour-coded: <span style="color:#ff4444">RED &gt;70%</span> · <span style="color:#ffaa00">AMBER 40–70%</span> · <span style="color:#44ff44">GREEN &lt;40%</span>.<br>
+          • These values feed directly into weapon preset calculations when you upload a preset to a tube.
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">04</span> &nbsp; EVENT & FIRE CONTROL LOG
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          Every action is timestamped and appended to the scrollable <span style="color:#00ff41">EVENT LOG</span> (bottom-left).<br>
+          • <span style="color:#009a22">Green</span> = informational &nbsp;|&nbsp; <span style="color:#ffaa00">Amber</span> = warning / state change<br>
+          • <span style="color:#ff4444">Red</span> = critical events (fires, detonations, interlock violations)<br>
+          • The log auto-scrolls; scroll up manually to review earlier entries.<br>
+          • Detonation events are highlighted in red and record which torpedo destroyed which contact.
+        </div>
+      </div>
+
+    </div><!-- /LEFT COLUMN -->
+
+    <!-- RIGHT COLUMN -->
+    <div>
+
+      <!-- STEP 5 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">05</span> &nbsp; TUBE & WEAPON STATUS
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          Four torpedo tubes are shown in the <span style="color:#00ff41">TUBE GRID</span> (top-right column).<br>
+          • <strong style="color:#00ff41">Click a tube</strong> to select it as the active tube — its border glows green and the header updates.<br>
+          • Use the <span style="color:#00ff41">dropdown</span> inside each tube card to change the loaded weapon type.<br>
+          • Tube states: <span style="color:#1a5a1a">LOADED</span> → <span style="color:#ffaa00">FLOODED</span> → <span style="color:#00ff41">READY</span> → <span style="color:#ff4444">FIRED</span><br>
+          • After a tube fires or a torpedo detonates, the <span style="color:#1a5a1a">RELOAD</span> section appears — select weapon and confirm reload.<br>
+          • Available weapons: <span style="color:#00ff41">MK-48 ADCAP · MK-48 MOD7 · UUM-44 SUBROC · BGM-109 TLAM</span>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">06</span> &nbsp; FIRE SEQUENCE — STEP BY STEP
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          Follow this sequence to fire a weapon:<br>
+          <span style="color:#ffaa00">①</span> Select an active tube (click tube card — ensure it is LOADED)<br>
+          <span style="color:#ffaa00">②</span> Designate a target (right-click plot or TGT button in contact list)<br>
+          <span style="color:#ffaa00">③</span> Click <span style="color:#00ff41">FLOOD &amp; EQUALIZE</span> — tube border turns amber/blinks (flooding)<br>
+          <span style="color:#ffaa00">④</span> Click <span style="color:#00ff41">OUTER DOOR OPEN</span> — tube border turns solid green (READY)<br>
+          <span style="color:#ffaa00">⑤</span> Optionally click <span style="color:#ffaa00">UPLOAD PRESET</span> to send depth / enable-range settings<br>
+          <span style="color:#ffaa00">⑥</span> Enable all four <span style="color:#00ff41">INTERLOCKS</span> (FIRE AUTH KEY · CO CONFIRM · XO CONFIRM · FLOOD CONFIRMED)<br>
+          <span style="color:#ffaa00">⑦</span> Press <span style="color:#ff4444">[ FIRE A ]</span> — button arms (red glow, blinking)<br>
+          <span style="color:#ffaa00">⑧</span> Press <span style="color:#ff4444">[ FIRE B ]</span> within the window to complete the dual trigger — weapon away!
+        </div>
+      </div>
+
+      <!-- STEP 7 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">07</span> &nbsp; WIRE-GUIDANCE CONTROL
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          After firing, a wire-guided torpedo can be steered from the <span style="color:#00ff41">WIRE-GUIDANCE PANEL</span> (bottom-right column).<br>
+          • Use the <strong style="color:#00ff41">arrow buttons</strong> or <strong style="color:#00ff41">Numpad 8/4/6/2</strong> to steer depth and course.<br>
+          • The <span style="color:#00ff41">SPEED CMD</span> slider adjusts torpedo speed (10–55 kt).<br>
+          • Wire pays out automatically; status shows <span style="color:#00ff41">PAID OUT</span> when the 18,000 m limit is reached — torpedo goes autonomous.<br>
+          • <span style="color:#ffaa00">CUT WIRE</span> severs guidance immediately; <span style="color:#00ff41">ENABLE HOMING</span> activates onboard seeker.
+        </div>
+      </div>
+
+      <!-- STEP 8 -->
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px">
+        <div style="font-size:10px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">08</span> &nbsp; WEAPON PRESET PARAMETERS
+        </div>
+        <div style="font-size:9px;line-height:1.8;color:#009a22">
+          The <span style="color:#00ff41">PRESET PANEL</span> (bottom-right of left panel) configures weapon behaviour before firing.<br>
+          • <span style="color:#00ff41">DEPTH LIMIT</span> slider — maximum operating depth (50–800 m)<br>
+          • <span style="color:#00ff41">ENABLE RNG</span> slider — range at which the seeker activates (200–5000 m)<br>
+          • <span style="color:#00ff41">HOMING MODE</span> dropdown — ACTIVE/PASSIVE · PASSIVE ONLY · ACTIVE ONLY · WAKE HOMING<br>
+          • <span style="color:#00ff41">SEARCH PATTERN</span> is fixed at SNAKE-6 for this platform.<br>
+          • Click <span style="color:#ffaa00">UPLOAD PRESET</span> on the active tube to push these parameters before firing.
+        </div>
+      </div>
+
+    </div><!-- /RIGHT COLUMN -->
+  </div><!-- /grid -->
+
+  <!-- Footer note -->
+  <div style="margin-top:14px;padding-top:8px;border-top:1px solid #0d220d;font-size:8px;
+       color:#004f0e;letter-spacing:1px;text-align:center">
+    SIMULATION ONLY — NOT FOR OPERATIONAL USE &nbsp;|&nbsp; SEA/SKY-6 CMS WEAPONS CONTROL CONSOLE v17 &nbsp;|&nbsp; ALL CONTACTS ARE SIMULATED
+  </div>
+</div>
+
+</body>
+</html>
