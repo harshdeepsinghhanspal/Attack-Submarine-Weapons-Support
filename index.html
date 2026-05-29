@@ -18,6 +18,10 @@ html,body{background:#040a04;min-height:100vh}
 .lr{background:#ff3333;box-shadow:0 0 5px #ff3333}
 @keyframes bk{0%,100%{opacity:1}50%{opacity:0.15}}
 .blink{animation:bk 0.9s infinite}
+.preset-glow{border-color:#cc8800 !important;box-shadow:0 0 10px rgba(255,170,0,0.35),inset 0 0 8px rgba(255,170,0,0.08);background:#120d00 !important;animation:preset-pulse 1.2s ease-in-out infinite}
+@keyframes preset-pulse{0%,100%{box-shadow:0 0 8px rgba(255,170,0,0.3),inset 0 0 6px rgba(255,170,0,0.06)}50%{box-shadow:0 0 18px rgba(255,170,0,0.6),inset 0 0 12px rgba(255,170,0,0.15)}}
+@keyframes tut-glow{0%,100%{box-shadow:0 0 6px rgba(255,221,0,0.4)}50%{box-shadow:0 0 14px rgba(255,221,0,0.9),0 0 4px rgba(255,221,0,0.6)}}
+#tut-btn{color:#ffdd00;border-color:#ffdd00;animation:tut-glow 1.4s ease-in-out infinite}
 .stime{font-size:9px;color:#00cc33;letter-spacing:2px}
 .outerrow{display:grid;grid-template-columns:1fr 380px;gap:5px;margin-bottom:5px;align-items:stretch}
 .screens-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}
@@ -90,8 +94,8 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .firesec{margin-top:5px;padding:6px;border:2px solid #aa0000;background:#100000}
 .firelb{font-size:9px;color:#ff4444;letter-spacing:2px;margin-bottom:4px;text-align:center;font-weight:bold}
 .dfire{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.grange{-webkit-appearance:none;background:#0a1e0a;height:3px;border-radius:1px;outline:none;width:100%}
-.grange::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;background:#00ff41;border-radius:50%;cursor:pointer}
+.grange{-webkit-appearance:none;background:#0a1e0a;height:3px;border-radius:2px;outline:none;width:100%}
+.grange::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:#00ff41;border-radius:50%;cursor:pointer;box-shadow:0 0 6px rgba(0,255,65,0.5)}
 .gsel{background:#030b03;border:1px solid #153a15;color:#00cc33;font-family:'Courier New',monospace;font-size:9px;width:100%;padding:2px;margin-top:3px}
 .gsel:focus{outline:none;border-color:#00ff41}
 .elog{font-size:13px;height:130px;overflow-y:auto;padding:5px;background:#030b03;border:1px solid #0d220d}
@@ -135,12 +139,10 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:10px">
     <div class="htitle">SEA/SKY-6 CMS — WEAPONS CONTROL CONSOLE</div>
-    <button onclick="document.getElementById('tutorial-section').scrollIntoView({behavior:'smooth'})"
-      style="background:transparent;border:1px solid #00cc33;color:#00ff41;font-family:'Courier New',monospace;
-             font-size:8px;letter-spacing:2px;padding:2px 8px;cursor:pointer;text-transform:uppercase;
-             transition:all .15s;white-space:nowrap"
-      onmouseover="this.style.background='#001800';this.style.borderColor='#00ff41'"
-      onmouseout="this.style.background='transparent';this.style.borderColor='#00cc33'">
+    <button id="tut-btn" onclick="document.getElementById('tutorial-section').scrollIntoView({behavior:'smooth'})"
+      style="background:transparent;font-family:'Courier New',monospace;
+             font-size:10px;letter-spacing:2px;padding:3px 10px;cursor:pointer;text-transform:uppercase;
+             white-space:nowrap;font-weight:bold;border-width:2px;border-style:solid">
       ▼ TUTORIAL
     </button>
   </div>
@@ -155,11 +157,12 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
   <div class="stime" id="stime">00:00:00Z</div>
 </div>
 
-<div class="outerrow">
-  <!-- LEFT: Contact list + Tactical plot side-by-side, log below -->
-  <div>
-    <!-- Contact list LEFT, Tactical plot RIGHT -->
-    <div style="display:grid;grid-template-columns:440px 1fr;gap:5px;margin-bottom:5px;align-items:start">
+<div class="outerrow" id="outerrow">
+  <!-- LEFT: wrapper containing sidebar, toggle, and plot column -->
+  <div id="left-wrapper" style="display:flex;gap:0;align-items:stretch;min-width:0">
+
+    <!-- SIDEBAR: Contact List + Event Log (toggleable) -->
+    <div id="sidebar-panels" style="display:flex;flex-direction:column;gap:5px;width:460px;flex-shrink:0;margin-right:5px">
       <!-- Contact list -->
       <div class="pnl">
         <div class="ptitle">CONTACT LIST</div>
@@ -170,7 +173,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           <span style="color:#4488ff">&#9632; NEUTRAL</span>
         </div>
         <div style="font-size:9px;color:#004f0e;letter-spacing:1px;margin-bottom:2px">CLICK ROW TO SELECT</div>
-        <div id="ctbl-wrap" style="overflow-y:auto;overflow-x:hidden;max-height:380px">
+        <div id="ctbl-wrap" style="overflow-y:auto;overflow-x:hidden;max-height:280px">
           <table class="ttbl" id="ctbl" style="table-layout:fixed;width:100%">
             <colgroup>
               <col style="width:15%"><col style="width:20%"><col style="width:11%"><col style="width:11%"><col style="width:10%"><col style="width:18%"><col style="width:15%">
@@ -180,20 +183,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </table>
         </div>
       </div>
-      <!-- Tactical plot -->
-      <div class="pnl" style="text-align:center">
-        <div class="ptitle" style="text-align:left">TACTICAL FIRE CONTROL PLOT — CLICK TO SELECT · RIGHT-CLICK TO DESIGNATE TARGET</div>
-        <canvas id="tac" width="460" height="460" style="display:inline-block;background:#020a02;border:1px solid #153a15;cursor:crosshair;max-width:100%"></canvas>
-        <div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;justify-content:center">
-          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">BRG</span><span class="tcv" id="sbrg">---</span></div>
-          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">RNG</span><span class="tcv" id="srng">---</span></div>
-          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">SPD</span><span class="tcv" id="sspd">---</span></div>
-          <div class="tc" style="flex:0 0 auto;padding:2px 8px"><span class="tclb">P(K)</span><span class="tcv" id="spk" style="color:#ffaa00">---</span></div>
-        </div>
-      </div>
-    </div>
-    <!-- BOTTOM LOG + PRESETS below the plot -->
-    <div class="botrow">
+      <!-- Event & Fire Control Log -->
       <div class="pnl">
         <div class="ptitle">EVENT & FIRE CONTROL LOG</div>
         <div class="elog" id="elog">
@@ -202,22 +192,80 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           <div class="ll"><span class="lt">[00:00:03] </span><span class="lm">Tube 1 &amp; 2 loaded MK-48 ADCAP. Tubes 3–4 empty.</span></div>
         </div>
       </div>
-      <div class="pnl">
-        <div class="ptitle">WEAPON PRESET PARAMETERS</div>
-        <div class="prow"><span class="pk">SEARCH PATTERN</span><span class="pv">DART</span></div>
-        <div class="prow"><span class="pk">ENABLE RNG</span><span class="pv" id="pr-er">1800m</span></div>
-        <div class="prow"><span class="pk">DEPTH LIMIT</span><span class="pv" id="pr-dl">450m</span></div>
-        <div class="prow"><span class="pk">WIRE GUIDANCE</span><span class="pv" style="color:#00ff41">ENABLED</span></div>
-        <select class="gsel" onchange="logEvt('Homing mode: '+this.value,'lm')">
-          <option>ACTIVE/PASSIVE</option><option>PASSIVE ONLY</option><option>ACTIVE ONLY</option><option>WAKE HOMING</option>
-        </select>
-        <div class="dprow" style="margin-top:4px"><span class="dplb">DEPTH LIM</span><input type="range" class="grange" min="50" max="800" value="450" step="10" oninput="document.getElementById('pr-dl').textContent=this.value+'m'"><span class="dpv">450m</span></div>
-        <div class="dprow"><span class="dplb">ENABLE RNG</span><input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m'"><span class="dpv">1800m</span></div>
+    </div>
+
+    <!-- Toggle button + plot-col: always together, never move -->
+    <div style="display:flex;gap:5px;flex:1;min-width:0;align-items:flex-start">
+
+      <!-- Plot column with toggle button side by side, natural height only -->
+      <div style="display:flex;gap:0;flex:1;min-width:0;align-items:stretch">
+
+        <!-- Toggle button — height matches plot-col natural height -->
+        <button id="sidebar-toggle" onclick="toggleSidebar()"
+          style="writing-mode:vertical-rl;text-orientation:mixed;background:#0a1e0a;border:1px solid #1e5c1e;
+                 color:#00cc33;font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;
+                 padding:10px 5px;cursor:pointer;text-transform:uppercase;transition:all .15s;border-radius:2px;
+                 width:22px;white-space:nowrap;flex-shrink:0;align-self:stretch"
+          onmouseover="this.style.background='#143d14';this.style.borderColor='#00cc33';this.style.color='#00ff41'"
+          onmouseout="this.style.background='#0a1e0a';this.style.borderColor='#1e5c1e';this.style.color='#00cc33'">
+          ◀ HIDE PANELS
+        </button>
+
+      <!-- Plot column: Tactical plot + Wire Guidance — fixed width, never moves -->
+      <div id="plot-col" style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:0;margin-left:5px">
+        <!-- Tactical plot -->
+        <div class="pnl" style="text-align:center;flex:0 0 auto">
+          <div class="ptitle" style="text-align:left">TACTICAL FIRE CONTROL PLOT — CLICK TO SELECT · RIGHT-CLICK TO DESIGNATE TARGET</div>
+          <canvas id="tac" width="460" height="460" style="display:inline-block;background:#020a02;border:1px solid #153a15;cursor:crosshair;max-width:100%"></canvas>
+          <div style="display:flex;gap:4px;margin-top:2px;flex-wrap:wrap;justify-content:center">
+            <div class="tc" style="flex:0 0 auto;padding:2px 6px"><span class="tclb">BRG</span><span class="tcv" id="sbrg">---</span></div>
+            <div class="tc" style="flex:0 0 auto;padding:2px 6px"><span class="tclb">RNG</span><span class="tcv" id="srng">---</span></div>
+            <div class="tc" style="flex:0 0 auto;padding:2px 6px"><span class="tclb">SPD</span><span class="tcv" id="sspd">---</span></div>
+            <div class="tc" style="flex:0 0 auto;padding:2px 6px"><span class="tclb">P(K)</span><span class="tcv" id="spk" style="color:#ffaa00">---</span></div>
+          </div>
+        </div>
+        <!-- BOTTOM: Wire Guidance Control -->
+        <div class="pnl" style="padding:3px 6px;flex:0 0 auto">
+          <div class="ptitle" style="margin-bottom:2px;padding-bottom:1px">WIRE-GUIDANCE CONTROL — NUMPAD 8/4/6/2</div>
+          <div style="display:flex;gap:4px;align-items:center;width:100%">
+            <!-- LEFT ~30%: speed cmd slider + compact wire status -->
+            <div style="flex:0 0 30%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px">
+              <div style="font-size:11px;color:#006a14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ACT: <span id="wt-id" style="color:#ffaa00">NO WEAPON IN WIRE</span></div>
+              <div style="display:flex;align-items:center;gap:5px;width:100%">
+                <span style="font-size:11px;color:#006a14;white-space:nowrap;letter-spacing:1px;font-weight:bold">SPD CMD</span>
+                <input type="range" class="grange" min="10" max="55" value="35" step="1" id="wsl" oninput="wireSpdSet(this.value)" style="flex:1;min-width:0;height:3px;cursor:pointer">
+                <span class="dpv" id="wsd" style="white-space:nowrap;font-size:13px;font-weight:bold;color:#00ff41">35kt</span>
+              </div>
+              <div style="font-size:11px;color:#006a14;line-height:1.55">
+                WIRE: <span id="wst" style="color:#00ff41">STANDBY</span> &nbsp;
+                PAID: <span id="wpo" style="color:#00cc33">0m</span> &nbsp; SPD: <span id="ws-disp" style="color:#00ff41">—</span>
+              </div>
+            </div>
+            <!-- CENTER 60%: steering arrows -->
+            <div style="flex:0 0 60%;display:flex;align-items:center;justify-content:center">
+              <div class="wgrid" style="width:100%;max-width:320px">
+                <div class="wblank"></div>
+                <div class="wcdir" id="wup" onclick="wireCmd('SHALLOW')" style="padding:5px;font-size:18px">&#9650;</div>
+                <div class="wblank"></div>
+                <div class="wcdir" id="wleft" onclick="wireCmd('PORT')" style="padding:5px;font-size:18px">&#9664;</div>
+                <div style="display:flex;align-items:center;justify-content:center;font-size:9px;color:#006a14;text-align:center;font-weight:bold">STEER<br>DEPTH</div>
+                <div class="wcdir" id="wright" onclick="wireCmd('STBD')" style="padding:5px;font-size:18px">&#9654;</div>
+                <div class="wblank"></div>
+                <div class="wcdir" id="wdn" onclick="wireCmd('DEEP')" style="padding:5px;font-size:18px">&#9660;</div>
+                <div class="wblank"></div>
+              </div>
+            </div>
+            <!-- RIGHT: CUT WIRE + ENABLE HOMING stacked -->
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px;justify-content:center;min-width:0">
+              <button class="btn ba" onclick="cutWire()" style="width:100%;padding:4px 2px;font-size:9px">CUT WIRE</button>
+              <button class="btn bg" onclick="wireHoming()" style="width:100%;padding:4px 2px;font-size:9px">ENABLE HOMING</button>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   </div>
-
-  <!-- RIGHT COL: Tubes → Fire Control → Wire Guidance stacked -->
   <div class="right-col">
     <!-- Tube & Weapon Status -->
     <div class="pnl">
@@ -307,28 +355,20 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
       </div>
     </div>
 
-    <!-- Wire Guidance -->
-    <div class="pnl">
-      <div class="ptitle">WIRE-GUIDANCE CONTROL — NUMPAD 8/4/6/2</div>
-      <div style="font-size:12px;color:#006a14;margin-bottom:4px">ACTIVE: <span id="wt-id" style="color:#ffaa00">NO WEAPON IN WIRE</span> &nbsp; SPD: <span id="ws-disp" style="color:#00ff41">—</span></div>
-      <div class="wgrid">
-        <div class="wblank"></div>
-        <div class="wcdir" id="wup" onclick="wireCmd('SHALLOW')">&#9650;</div>
-        <div class="wblank"></div>
-        <div class="wcdir" id="wleft" onclick="wireCmd('PORT')">&#9664;</div>
-        <div style="display:flex;align-items:center;justify-content:center;font-size:11px;color:#006a14;text-align:center">STEER<br>DEPTH</div>
-        <div class="wcdir" id="wright" onclick="wireCmd('STBD')">&#9654;</div>
-        <div class="wblank"></div>
-        <div class="wcdir" id="wdn" onclick="wireCmd('DEEP')">&#9660;</div>
-        <div class="wblank"></div>
+    <!-- Weapon Preset Parameters (swapped here from left col) -->
+    <div class="pnl" id="preset-pnl" style="padding:4px 6px">
+      <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px">WEAPON PRESET PARAMETERS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px">
+        <div class="prow" style="padding:1px 0"><span class="pk">SEARCH</span><span class="pv">SNAKE-6</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">WIRE GUID</span><span class="pv" style="color:#00ff41">ENABLED</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">ENABLE RNG</span><span class="pv" id="pr-er">1800m</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">DEPTH LIM</span><span class="pv" id="pr-dl">450m</span></div>
       </div>
-      <div class="dprow"><span class="dplb">SPEED CMD</span><input type="range" class="grange" min="10" max="55" value="35" step="1" id="wsl" oninput="wireSpdSet(this.value)"><span class="dpv" id="wsd">35kt</span></div>
-      <div style="font-size:11px;color:#006a14;margin-top:3px">WIRE: <span id="wst" style="color:#00ff41">STANDBY</span> &nbsp; PAID OUT: <span id="wpo" style="color:#00cc33">0m</span></div>
-      <div style="font-size:11px;color:#555;margin-top:3px">MAX WIRE: ~18,000m &nbsp;|&nbsp; STEER RATE: 1.5°/CMD</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px">
-        <button class="btn ba" onclick="cutWire()">CUT WIRE</button>
-        <button class="btn bg" onclick="wireHoming()">ENABLE HOMING</button>
-      </div>
+      <select class="gsel" style="margin-top:3px" onchange="logEvt('Homing mode: '+this.value,'lm')">
+        <option>ACTIVE/PASSIVE</option><option>PASSIVE ONLY</option><option>ACTIVE ONLY</option><option>WAKE HOMING</option>
+      </select>
+      <div class="dprow" style="margin-top:3px"><span class="dplb">DEPTH LIM</span><input type="range" class="grange" min="50" max="800" value="450" step="10" oninput="document.getElementById('pr-dl').textContent=this.value+'m'"><span class="dpv">450m</span></div>
+      <div class="dprow" style="margin-top:2px"><span class="dplb">ENABLE RNG</span><input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m'"><span class="dpv">1800m</span></div>
     </div>
   </div>
 </div>
@@ -365,6 +405,7 @@ function updateSequenceUI(){
   var presetBtn=document.getElementById('presetbtn');
   var fa=document.getElementById('fa');
   var seqStatus=document.getElementById('seq-status');
+  var presetPnl=document.getElementById('preset-pnl');
 
   floodBtn.classList.remove('btn-done');
   doorBtn.classList.remove('btn-done');
@@ -378,6 +419,7 @@ function updateSequenceUI(){
     doorBtn.disabled=true;
     presetBtn.disabled=true;
     fa.disabled=true;
+    presetPnl.classList.remove('preset-glow');
     seqStatus.textContent=tubeStates[i]==='fired'?'Tube expended — reload to continue.':'Load a weapon first.';
     seqStatus.style.color='#ff4444';
     return;
@@ -388,6 +430,7 @@ function updateSequenceUI(){
     doorBtn.disabled=true;
     presetBtn.disabled=true;
     fa.disabled=true;
+    presetPnl.classList.remove('preset-glow');
     seqStatus.textContent='Step 1: Flood & equalize tube '+(i+1)+'.';
     seqStatus.style.color='#ffaa00';
   } else {
@@ -397,6 +440,7 @@ function updateSequenceUI(){
       doorBtn.disabled=false;
       presetBtn.disabled=true;
       fa.disabled=true;
+      presetPnl.classList.remove('preset-glow');
       seqStatus.textContent='Step 2: Open outer door for tube '+(i+1)+'.';
       seqStatus.style.color='#ffaa00';
     } else {
@@ -405,11 +449,13 @@ function updateSequenceUI(){
       if(!steps[2]){
         presetBtn.disabled=false;
         fa.disabled=true;
+        presetPnl.classList.add('preset-glow');
         seqStatus.textContent='Step 3: Upload preset to tube '+(i+1)+'.';
         seqStatus.style.color='#ffaa00';
       } else {
         presetBtn.classList.add('btn-done');
         presetBtn.disabled=true;
+        presetPnl.classList.remove('preset-glow');
         if(tgtOk){
           fa.disabled=false;
           fa.classList.add('arm');
@@ -775,6 +821,9 @@ function cutWire(){
   showReloadOption(tubeIdx);
 }
 function showReloadOption(tubeIdx){
+  // Don't prompt reload if tube already has a weapon loaded or is currently loading
+  var state=tubeStates[tubeIdx];
+  if(state==='loaded'||state==='loading'||state==='rdy'||state==='flooding') return;
   var sec=document.getElementById('reload-sec');
   if(sec.style.display==='block'&&parseInt(sec.dataset.tube)===tubeIdx) return;
   var n=tubeIdx+1;
@@ -1120,6 +1169,29 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
+// ========== SIDEBAR TOGGLE ==========
+var sidebarVisible = true;
+function toggleSidebar(){
+  var panel = document.getElementById('sidebar-panels');
+  var btn = document.getElementById('sidebar-toggle');
+  var outerrow = document.getElementById('outerrow');
+  if(sidebarVisible){
+    panel.style.display = 'none';
+    panel.style.marginRight = '0';
+    btn.textContent = '▶ SHOW PANELS';
+    // Sidebar was 460px wide — give most of that space to the left (plot) col, right col grows only a little
+    outerrow.style.gridTemplateColumns = '1fr 480px';
+    sidebarVisible = false;
+  } else {
+    panel.style.display = 'flex';
+    panel.style.marginRight = '5px';
+    btn.textContent = '◀ HIDE PANELS';
+    outerrow.style.gridTemplateColumns = '1fr 380px';
+    sidebarVisible = true;
+  }
+  setTimeout(resizeTac, 50);
+}
+
 renderContactTable();
 selectContact(0);
 resizeTac();
@@ -1131,21 +1203,9 @@ setInterval(function(){
 },2000);
 </script>
 
-<!-- ===== TUTORIAL BUTTON ===== -->
-<div style="text-align:center;margin:10px 0 4px">
-  <button onclick="document.getElementById('tutorial-section').scrollIntoView({behavior:'smooth'})"
-    style="background:transparent;border:2px solid #00cc33;color:#00ff41;font-family:'Courier New',monospace;
-           font-size:11px;letter-spacing:3px;padding:7px 28px;cursor:pointer;text-transform:uppercase;
-           transition:all .2s;box-shadow:0 0 10px rgba(0,255,65,0.15)"
-    onmouseover="this.style.background='#001800';this.style.boxShadow='0 0 18px rgba(0,255,65,0.35)'"
-    onmouseout="this.style.background='transparent';this.style.boxShadow='0 0 10px rgba(0,255,65,0.15)'">
-    ▼ &nbsp; TUTORIAL &nbsp; ▼
-  </button>
-</div>
-
 <!-- ===== TUTORIAL SECTION ===== -->
 <div id="tutorial-section" style="background:#040a04;border:1px solid #1a4a1a;border-top:2px solid #00cc33;
-     padding:18px 16px 24px;margin-top:6px;font-family:'Courier New',monospace;color:#00bb2e;max-width:2000px">
+     padding:18px 16px 24px;margin-top:6px;font-family:'Courier New',monospace;color:#00bb2e;width:100%;max-width:2000px;margin-left:auto;margin-right:auto">
   <div style="font-size:13px;font-weight:bold;color:#00ff41;letter-spacing:3px;border-bottom:1px solid #153a15;
        padding-bottom:8px;margin-bottom:16px">
     ⬡ &nbsp; SEA/SKY-6 CMS — OPERATOR QUICK-REFERENCE GUIDE
