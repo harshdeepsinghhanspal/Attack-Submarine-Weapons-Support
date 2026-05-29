@@ -533,6 +533,43 @@ function spawnContact(){
   renderContactTable();
 }
 
+function spawnHostile(){
+  var threats={'sub-hostile':['HIGH','MED'],'ship-hostile':['HIGH','MED']};
+  var hostileTypes=['sub-hostile','sub-hostile','ship-hostile','ship-hostile'];
+  contactIdCounter++;
+  while(contacts.some(function(x){return x.id==='C-'+String(contactIdCounter).padStart(2,'0');})){
+    contactIdCounter++;
+  }
+  var t=hostileTypes[Math.floor(Math.random()*hostileTypes.length)];
+  var thrList=threats[t];
+  var thr=thrList[Math.floor(Math.random()*thrList.length)];
+  var isSub=t.indexOf('sub')>=0;
+  var spd=isSub?(10+Math.random()*16):(8+Math.random()*12);
+  var brg=Math.random()*360;
+  var hdg;
+  var laneHdg;
+  if(!isSub){
+    var lane=SHIPPING_LANES[Math.floor(Math.random()*SHIPPING_LANES.length)];
+    laneHdg=lane.hdg;
+    var entryDir=(laneHdg+180+360)%360;
+    brg=(entryDir+(Math.random()-0.5)*40+360)%360;
+    hdg=laneHdg+(Math.random()-0.5)*10;
+  } else {
+    hdg=(brg+150+Math.random()*60)%360;
+  }
+  var c={
+    id:'C-'+String(contactIdCounter).padStart(2,'0'),
+    type:t,threat:thr,
+    brg:brg,rng:0.94,
+    hdg:hdg,spd:spd,
+    alive:true,track:[]
+  };
+  if(!isSub) c.laneHdg=laneHdg;
+  contacts.push(c);
+  logEvt('NEW HOSTILE CONTACT '+c.id+' — '+t.toUpperCase()+' BRG '+Math.round(brg)+'° THREAT:'+thr,'lc');
+  renderContactTable();
+}
+
 // ========== CONTACT CLASSIFICATION ==========
 var typeColors={
   'sub-hostile':'#ff4444',
@@ -1164,7 +1201,13 @@ function loop(){
     spawnTimer=0;
     pruneDeadContacts();
     var alive=contacts.filter(function(c){return c.alive;}).length;
+    var hostileAlive=contacts.filter(function(c){return c.alive&&c.type.indexOf('hostile')>=0;}).length;
+    // Always spawn if total is low, and force hostile spawn if no hostiles remain
     if(alive<12) spawnContact();
+    // Guarantee at least 2 hostiles are always present — spawn dedicated hostile if needed
+    if(hostileAlive<2){
+      spawnHostile();
+    }
   }
   requestAnimationFrame(loop);
 }
