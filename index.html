@@ -32,7 +32,6 @@ html,body{background:#040a04;min-height:100vh}
 .pnl{background:#040a04;border:1px solid #153a15;padding:6px}
 .ptitle{font-size:9px;letter-spacing:2px;color:#009a22;border-bottom:1px solid #122a12;padding-bottom:2px;margin-bottom:5px}
 canvas{display:block;background:#020a02;border:1px solid #153a15}
-/* contact table */
 .ttbl{font-size:12px;width:100%;border-collapse:collapse}
 .ttbl th{color:#006a14;font-size:11px;letter-spacing:1px;padding:3px 4px;border-bottom:1px solid #122a12;text-align:left;overflow:hidden;white-space:nowrap}
 .ttbl td{padding:3px 4px;border-bottom:1px solid #081808;color:#00bb2e;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0}
@@ -66,24 +65,20 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .twsel:focus{outline:none;border-color:#00ff41}
 .wactn{display:flex;flex-direction:column;gap:2px;margin-bottom:5px}
 .btn{border:none;cursor:pointer;font-family:'Courier New',monospace;font-size:11px;letter-spacing:1px;padding:5px 6px;text-transform:uppercase;transition:all .15s;width:100%;border-radius:2px;font-weight:bold}
-/* Green action buttons */
 .bg{background:#0d2e0d;border:1px solid #1e5c1e;color:#00cc33;box-shadow:inset 0 1px 0 rgba(0,255,65,0.08)}
 .bg:hover:not(:disabled){background:#143d14;border-color:#00cc33;color:#00ff41;box-shadow:inset 0 1px 0 rgba(0,255,65,0.15),0 0 6px rgba(0,255,65,0.2)}
 .bg:active:not(:disabled){background:#0a220a;box-shadow:inset 0 2px 4px rgba(0,0,0,0.4)}
 .bg:disabled{background:#080f08;border-color:#0d1e0d;color:#1e4a1e;cursor:not-allowed;box-shadow:none}
-/* Amber action buttons */
 .ba{background:#2a1a00;border:1px solid #5a3800;color:#cc8800;box-shadow:inset 0 1px 0 rgba(255,170,0,0.08)}
 .ba:hover:not(:disabled){background:#3a2400;border-color:#cc8800;color:#ffaa00;box-shadow:inset 0 1px 0 rgba(255,170,0,0.15),0 0 6px rgba(255,170,0,0.2)}
 .ba:active:not(:disabled){background:#1e1200;box-shadow:inset 0 2px 4px rgba(0,0,0,0.4)}
 .ba:disabled{background:#110d00;border-color:#2a1a00;color:#4a3000;cursor:not-allowed;box-shadow:none}
-/* Red fire button */
 .bd{background:#2a0000;border:2px solid #660000;color:#cc2222;font-weight:bold;font-size:12px;letter-spacing:2px;padding:7px;box-shadow:inset 0 1px 0 rgba(255,68,68,0.08)}
 .bd:hover:not(:disabled){background:#3a0000;border-color:#cc2222;color:#ff4444;box-shadow:inset 0 1px 0 rgba(255,68,68,0.15),0 0 8px rgba(255,68,68,0.25)}
 .bd:active:not(:disabled){background:#1a0000;box-shadow:inset 0 2px 4px rgba(0,0,0,0.5)}
 .bd:disabled{background:#0f0000;border-color:#330000;color:#441111;cursor:not-allowed;box-shadow:none}
 .bd.arm{background:#3d0000;border-color:#ff2222;color:#ff4444;box-shadow:0 0 10px rgba(255,34,34,0.6),inset 0 1px 0 rgba(255,100,100,0.2);animation:bk .7s infinite}
 .bd.pressed{background:#1a0000;border-color:#ff0000;color:#ff6666;animation:none}
-/* step-done highlight: solid green fill when step completed */
 .btn-done{background:#003d00 !important;border-color:#00cc33 !important;color:#00ff41 !important;box-shadow:0 0 8px rgba(0,255,65,0.35),inset 0 1px 0 rgba(0,255,65,0.2) !important;animation:none !important}
 .ilrow{display:flex;align-items:center;justify-content:space-between;padding:3px 6px;background:#061406;border:1px solid #1a4a1a;margin-bottom:3px;gap:4px}
 .illb{font-size:9px;color:#00cc33;letter-spacing:1px;white-space:nowrap;font-weight:bold}
@@ -112,13 +107,11 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .wcdir:hover,.wcdir.active{background:#001500;border-color:#00ff41;color:#00ff41}
 .wgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:4px}
 .wblank{border:1px solid transparent}
-/* threat dropdown per row */
 .threat-sel{background:#030b03;border:1px solid #153a15;color:#00cc33;font-family:'Courier New',monospace;font-size:9px;padding:1px 2px;width:76px}
 .threat-sel:focus{outline:none;border-color:#00ff41}
 .tgt-btn{background:transparent;border:1px solid #440000;color:#ff4444;font-family:'Courier New',monospace;font-size:9px;padding:2px 4px;cursor:pointer;white-space:nowrap}
 .tgt-btn:hover{background:#0f0000;border-color:#ff0000}
 .tgt-btn.active{background:#1a0000;border-color:#ff0000;color:#ff6666}
-/* legend */
 .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:8px}
 .lgi{display:flex;align-items:center;gap:3px;color:#006a14}
 .lgdot{width:7px;height:7px;border-radius:50%}
@@ -158,12 +151,8 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 </div>
 
 <div class="outerrow" id="outerrow">
-  <!-- LEFT: wrapper containing sidebar, toggle, and plot column -->
   <div id="left-wrapper" style="display:flex;gap:0;align-items:stretch;min-width:0">
-
-    <!-- SIDEBAR: Contact List + Event Log (toggleable) -->
     <div id="sidebar-panels" style="display:flex;flex-direction:column;gap:5px;width:460px;flex-shrink:0;margin-right:5px">
-      <!-- Contact list -->
       <div class="pnl">
         <div class="ptitle">CONTACT LIST</div>
         <div style="font-size:10px;margin-bottom:3px;line-height:1.6">
@@ -183,7 +172,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </table>
         </div>
       </div>
-      <!-- Event & Fire Control Log -->
       <div class="pnl">
         <div class="ptitle">EVENT & FIRE CONTROL LOG</div>
         <div class="elog" id="elog">
@@ -194,13 +182,8 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
       </div>
     </div>
 
-    <!-- Toggle button + plot-col: always together, never move -->
     <div style="display:flex;gap:5px;flex:1;min-width:0;align-items:flex-start">
-
-      <!-- Plot column with toggle button side by side, natural height only -->
       <div style="display:flex;gap:0;flex:1;min-width:0;align-items:stretch">
-
-        <!-- Toggle button — height matches plot-col natural height -->
         <button id="sidebar-toggle" onclick="toggleSidebar()"
           style="writing-mode:vertical-rl;text-orientation:mixed;background:#0a1e0a;border:1px solid #1e5c1e;
                  color:#00cc33;font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;
@@ -211,9 +194,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           ◀ HIDE PANELS
         </button>
 
-      <!-- Plot column: Tactical plot + Wire Guidance — fixed width, never moves -->
       <div id="plot-col" style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:0;margin-left:5px">
-        <!-- Tactical plot -->
         <div class="pnl" style="text-align:center;flex:0 0 auto">
           <div class="ptitle" style="text-align:left">TACTICAL FIRE CONTROL PLOT — CLICK TO SELECT · RIGHT-CLICK TO DESIGNATE TARGET</div>
           <canvas id="tac" width="460" height="460" style="display:inline-block;background:#020a02;border:1px solid #153a15;cursor:crosshair;max-width:100%"></canvas>
@@ -224,11 +205,9 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
             <div class="tc" style="flex:0 0 auto;padding:2px 6px"><span class="tclb">P(K)</span><span class="tcv" id="spk" style="color:#ffaa00">---</span></div>
           </div>
         </div>
-        <!-- BOTTOM: Wire Guidance Control -->
         <div class="pnl" style="padding:3px 6px;flex:0 0 auto">
           <div class="ptitle" style="margin-bottom:2px;padding-bottom:1px">WIRE-GUIDANCE CONTROL — NUMPAD 8/4/6/2</div>
           <div style="display:flex;gap:4px;align-items:center;width:100%">
-            <!-- LEFT ~30%: speed cmd slider + compact wire status -->
             <div style="flex:0 0 30%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px">
               <div style="font-size:11px;color:#006a14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ACT: <span id="wt-id" style="color:#ffaa00">NO WEAPON IN WIRE</span></div>
               <div style="display:flex;align-items:center;gap:5px;width:100%">
@@ -241,7 +220,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
                 PAID: <span id="wpo" style="color:#00cc33">0m</span> &nbsp; SPD: <span id="ws-disp" style="color:#00ff41">—</span>
               </div>
             </div>
-            <!-- CENTER 60%: steering arrows -->
             <div style="flex:0 0 60%;display:flex;align-items:center;justify-content:center">
               <div class="wgrid" style="width:100%;max-width:320px">
                 <div class="wblank"></div>
@@ -255,7 +233,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
                 <div class="wblank"></div>
               </div>
             </div>
-            <!-- RIGHT: CUT WIRE + ENABLE HOMING stacked -->
             <div style="flex:1;display:flex;flex-direction:column;gap:2px;justify-content:center;min-width:0">
               <button class="btn ba" onclick="cutWire()" style="width:100%;padding:4px 2px;font-size:9px">CUT WIRE</button>
               <button class="btn bg" onclick="wireHoming()" style="width:100%;padding:4px 2px;font-size:9px">ENABLE HOMING</button>
@@ -267,7 +244,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
     </div>
   </div>
   <div class="right-col">
-    <!-- Tube & Weapon Status -->
     <div class="pnl">
       <div class="ptitle">TUBE & WEAPON STATUS</div>
       <div class="tubegrid" id="tubegrid">
@@ -334,7 +310,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
         </select>
         <button class="btn bg" onclick="reloadTube()">&#8635; RELOAD TUBE <span id="reload-btn-lbl">—</span></button>
       </div>
-      <!-- Sequential action buttons -->
       <div class="wactn">
         <button class="btn bg" onclick="floodTube()" id="floodbtn">FLOOD & EQUALIZE — TUBE <span id="floodlbl">1</span></button>
         <button class="btn bg" onclick="openDoor()" id="doorbtn" disabled>OUTER DOOR OPEN — TUBE <span id="doorlbl">1</span></button>
@@ -342,7 +317,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
       </div>
     </div>
 
-    <!-- Fire Control (simplified — no interlocks) -->
     <div class="pnl" style="border-color:#1a5a1a">
       <div class="ptitle" style="color:#00ff41;border-bottom-color:#1a5a1a">FIRE CONTROL</div>
       <div style="font-size:9px;color:#006a14;letter-spacing:1px;margin-bottom:6px;line-height:1.7">
@@ -355,7 +329,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
       </div>
     </div>
 
-    <!-- Weapon Preset Parameters (swapped here from left col) -->
     <div class="pnl" id="preset-pnl" style="padding:4px 6px">
       <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px">WEAPON PRESET PARAMETERS</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px">
@@ -374,6 +347,295 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 </div>
 
 <script>
+// ========== REALISTIC SOUND ENGINE ==========
+// All sounds built from noise shaping + filtering + envelopes. No ping, no sine slop.
+
+var AudioCtx = window.AudioContext || window.webkitAudioContext;
+var audioCtx = null;
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Shared white noise buffer — 2 seconds, generated once, reused by all sounds
+var _noiseBuffer = null;
+function noiseBuffer() {
+  if (_noiseBuffer) return _noiseBuffer;
+  var ctx = getCtx();
+  var sr = ctx.sampleRate;
+  var buf = ctx.createBuffer(1, sr * 2, sr);
+  var d = buf.getChannelData(0);
+  for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  _noiseBuffer = buf;
+  return buf;
+}
+
+function makeNoise(ctx) {
+  var src = ctx.createBufferSource();
+  src.buffer = noiseBuffer();
+  src.loop = true;
+  src.loopStart = Math.random() * 1.6;
+  src.loopEnd = 2.0;
+  return src;
+}
+
+function makeGain(ctx, val) {
+  var g = ctx.createGain();
+  g.gain.setValueAtTime(val, ctx.currentTime);
+  return g;
+}
+
+function makeFilter(ctx, type, freq, Q) {
+  var f = ctx.createBiquadFilter();
+  f.type = type;
+  f.frequency.value = freq;
+  if (Q !== undefined) f.Q.value = Q;
+  return f;
+}
+
+// -------------------------------------------------------
+// MECHANICAL BUTTON CLICK
+// Tight bandpass noise burst at 3.2kHz (snap) + body resonance at 1.1kHz.
+// Total ~35ms. Sounds like a Cherry MX key actuating.
+// -------------------------------------------------------
+function playButtonClick() {
+  var ctx = getCtx();
+  var t = ctx.currentTime;
+
+  // High snap transient (~3kHz bandpass)
+  var n1 = makeNoise(ctx);
+  var bp1 = makeFilter(ctx, 'bandpass', 3200, 9);
+  var hp1 = makeFilter(ctx, 'highpass', 1800, 1);
+  var lp1 = makeFilter(ctx, 'lowpass', 5800, 1);
+  var env1 = makeGain(ctx, 0);
+  n1.connect(bp1); bp1.connect(hp1); hp1.connect(lp1); lp1.connect(env1); env1.connect(ctx.destination);
+  env1.gain.setValueAtTime(0, t);
+  env1.gain.linearRampToValueAtTime(0.52, t + 0.001);
+  env1.gain.exponentialRampToValueAtTime(0.001, t + 0.026);
+  n1.start(t); n1.stop(t + 0.032);
+
+  // Body thud resonance (~1.1kHz)
+  var n2 = makeNoise(ctx);
+  var bp2 = makeFilter(ctx, 'bandpass', 1100, 4);
+  var env2 = makeGain(ctx, 0);
+  n2.connect(bp2); bp2.connect(env2); env2.connect(ctx.destination);
+  env2.gain.setValueAtTime(0, t);
+  env2.gain.linearRampToValueAtTime(0.17, t + 0.002);
+  env2.gain.exponentialRampToValueAtTime(0.001, t + 0.042);
+  n2.start(t); n2.stop(t + 0.048);
+}
+
+// -------------------------------------------------------
+// TORPEDO LAUNCH (UNDERWATER EJECTION)
+// a) Pneumatic ram thump: low-passed noise, mechanical ejection
+//    of the weapon out of the tube, 0–180ms
+// b) Water displacement swoosh: mid bandpass noise as the
+//    weapon clears the muzzle and pushes through water, 20–450ms
+// c) Bubbling wake: LFO-modulated low-pass noise as the motor
+//    spins up and the torpedo departs, 300–1400ms
+// d) Sub-bass discharge pulse: felt through the hull as the
+//    tube empties, 0–320ms
+// -------------------------------------------------------
+function playTorpedoLaunch() {
+  var ctx = getCtx();
+  var t = ctx.currentTime;
+
+  // a) Pneumatic ram / ejection thump
+  var n1 = makeNoise(ctx);
+  var lp1 = makeFilter(ctx, 'lowpass', 140, 3);
+  var hp1 = makeFilter(ctx, 'highpass', 35, 0.7);
+  var env1 = makeGain(ctx, 0);
+  n1.connect(lp1); lp1.connect(hp1); hp1.connect(env1); env1.connect(ctx.destination);
+  env1.gain.setValueAtTime(0, t);
+  env1.gain.linearRampToValueAtTime(0.6, t + 0.012);
+  env1.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  n1.start(t); n1.stop(t + 0.2);
+
+  // b) Water displacement swoosh
+  var n2 = makeNoise(ctx);
+  var bp2 = makeFilter(ctx, 'bandpass', 380, 1.3);
+  var hp2 = makeFilter(ctx, 'highpass', 150, 0.6);
+  var env2 = makeGain(ctx, 0);
+  n2.connect(bp2); bp2.connect(hp2); hp2.connect(env2); env2.connect(ctx.destination);
+  env2.gain.setValueAtTime(0, t + 0.02);
+  env2.gain.linearRampToValueAtTime(0.32, t + 0.09);
+  env2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+  n2.start(t + 0.02); n2.stop(t + 0.45);
+
+  // c) Bubbling wake — 18Hz LFO AM on low-pass noise
+  var n3 = makeNoise(ctx);
+  var lp3 = makeFilter(ctx, 'lowpass', 280, 2);
+  var lfo3 = ctx.createOscillator();
+  lfo3.frequency.value = 18; lfo3.type = 'sine';
+  var lfoG3 = makeGain(ctx, 0.14);
+  var baseG3 = makeGain(ctx, 0.21);
+  var env3 = makeGain(ctx, 0);
+  n3.connect(lp3); lp3.connect(baseG3); baseG3.connect(env3); env3.connect(ctx.destination);
+  lfo3.connect(lfoG3); lfoG3.connect(baseG3.gain);
+  env3.gain.setValueAtTime(0, t + 0.3);
+  env3.gain.linearRampToValueAtTime(0.85, t + 0.42);
+  env3.gain.exponentialRampToValueAtTime(0.001, t + 1.3);
+  n3.start(t + 0.3); n3.stop(t + 1.4);
+  lfo3.start(t + 0.3); lfo3.stop(t + 1.4);
+
+  // d) Sub-bass discharge pulse
+  var n4 = makeNoise(ctx);
+  var lp4 = makeFilter(ctx, 'lowpass', 70, 4);
+  var env4 = makeGain(ctx, 0);
+  n4.connect(lp4); lp4.connect(env4); env4.connect(ctx.destination);
+  env4.gain.setValueAtTime(0, t);
+  env4.gain.linearRampToValueAtTime(0.55, t + 0.02);
+  env4.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+  n4.start(t); n4.stop(t + 0.32);
+}
+
+// -------------------------------------------------------
+// UNDERWATER EXPLOSION (DISTANT)
+// a) Distant sub-bass thump: slow attack, no sharp transient, 0–1.5s
+// b) Muffled mid rumble: heavily low-passed body, long decay, 0–2.7s
+// c) Faint high shimmer: barely audible, distance-attenuated, 150ms–1.1s
+// d) Long low reverb tail: ocean conducting shockwave outward, 300ms–4.2s
+// -------------------------------------------------------
+function playUnderwaterExplosion() {
+  var ctx = getCtx();
+  var t = ctx.currentTime;
+
+  // a) Distant sub-bass thump
+  var n1 = makeNoise(ctx);
+  var lp1 = makeFilter(ctx, 'lowpass', 45, 3);
+  var hp1 = makeFilter(ctx, 'highpass', 18, 0.5);
+  var env1 = makeGain(ctx, 0);
+  n1.connect(lp1); lp1.connect(hp1); hp1.connect(env1); env1.connect(ctx.destination);
+  env1.gain.setValueAtTime(0, t);
+  env1.gain.linearRampToValueAtTime(0.55, t + 0.18);
+  env1.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+  n1.start(t); n1.stop(t + 1.5);
+
+  // b) Muffled mid rumble
+  var n2 = makeNoise(ctx);
+  var bp2 = makeFilter(ctx, 'bandpass', 90, 0.7);
+  var lp2b = makeFilter(ctx, 'lowpass', 160, 0.5);
+  var env2 = makeGain(ctx, 0);
+  n2.connect(bp2); bp2.connect(lp2b); lp2b.connect(env2); env2.connect(ctx.destination);
+  env2.gain.setValueAtTime(0, t);
+  env2.gain.linearRampToValueAtTime(0.34, t + 0.25);
+  env2.gain.exponentialRampToValueAtTime(0.001, t + 2.6);
+  n2.start(t); n2.stop(t + 2.7);
+
+  // c) Faint high shimmer
+  var n3 = makeNoise(ctx);
+  var bp3 = makeFilter(ctx, 'bandpass', 600, 1.0);
+  var lp3b = makeFilter(ctx, 'lowpass', 900, 0.6);
+  var env3 = makeGain(ctx, 0);
+  n3.connect(bp3); bp3.connect(lp3b); lp3b.connect(env3); env3.connect(ctx.destination);
+  env3.gain.setValueAtTime(0, t + 0.15);
+  env3.gain.linearRampToValueAtTime(0.06, t + 0.35);
+  env3.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+  n3.start(t + 0.15); n3.stop(t + 1.1);
+
+  // d) Long low reverb tail
+  var n4 = makeNoise(ctx);
+  var lp4 = makeFilter(ctx, 'lowpass', 180, 0.5);
+  var hp4 = makeFilter(ctx, 'highpass', 30, 0.5);
+  var env4 = makeGain(ctx, 0);
+  n4.connect(lp4); lp4.connect(hp4); hp4.connect(env4); env4.connect(ctx.destination);
+  env4.gain.setValueAtTime(0, t + 0.3);
+  env4.gain.linearRampToValueAtTime(0.18, t + 0.7);
+  env4.gain.exponentialRampToValueAtTime(0.001, t + 4.0);
+  n4.start(t + 0.3); n4.stop(t + 4.2);
+}
+
+// -------------------------------------------------------
+// PROPELLER NOISE — continuous, proximity-scaled
+// Multi-blade chop: LFO (11–15Hz) AM-modulating bandpass noise
+// (120–600Hz) + harmonic shimmer layer at ~900Hz.
+// Only plays when a surface ship is within 2.5km (rng_frac ≤ 0.25).
+// Volume proportional to proximity.
+// -------------------------------------------------------
+var propNodes = {};
+
+function startPropeller(cid, vol) {
+  if (propNodes[cid]) return;
+  var ctx = getCtx();
+  var t = ctx.currentTime;
+
+  var n = makeNoise(ctx);
+  n.loop = true;
+  var bp = makeFilter(ctx, 'bandpass', 320, 1.8);
+  var hp = makeFilter(ctx, 'highpass', 120, 0.7);
+
+  var lfo = ctx.createOscillator();
+  lfo.type = 'sine';
+  lfo.frequency.value = 11 + Math.random() * 4;
+  var lfoDepth = makeGain(ctx, 0.38);
+
+  var carrierGain = makeGain(ctx, 0.55);
+  var masterGain = makeGain(ctx, 0);
+
+  n.connect(bp); bp.connect(hp); hp.connect(carrierGain);
+  lfo.connect(lfoDepth); lfoDepth.connect(carrierGain.gain);
+  carrierGain.connect(masterGain); masterGain.connect(ctx.destination);
+
+  // Shimmer (higher harmonic)
+  var n2 = makeNoise(ctx);
+  n2.loop = true;
+  var bp2 = makeFilter(ctx, 'bandpass', 880, 2.5);
+  var shimGain = makeGain(ctx, 0);
+  n2.connect(bp2); bp2.connect(shimGain); shimGain.connect(ctx.destination);
+
+  n.start(t); n2.start(t); lfo.start(t);
+
+  masterGain.gain.linearRampToValueAtTime(vol, t + 1.8);
+  shimGain.gain.linearRampToValueAtTime(vol * 0.16, t + 1.8);
+
+  propNodes[cid] = { n, n2, lfo, masterGain, shimGain };
+}
+
+function updatePropeller(cid, vol) {
+  if (!propNodes[cid]) { startPropeller(cid, vol); return; }
+  var ctx = getCtx();
+  var nd = propNodes[cid];
+  nd.masterGain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 0.6);
+  nd.shimGain.gain.linearRampToValueAtTime(vol * 0.16, ctx.currentTime + 0.6);
+}
+
+function stopPropeller(cid) {
+  if (!propNodes[cid]) return;
+  var ctx = getCtx();
+  var nd = propNodes[cid];
+  var t = ctx.currentTime;
+  nd.masterGain.gain.linearRampToValueAtTime(0, t + 1.2);
+  nd.shimGain.gain.linearRampToValueAtTime(0, t + 1.2);
+  var saved = propNodes[cid];
+  delete propNodes[cid];
+  setTimeout(function() {
+    try { saved.n.stop(); saved.n2.stop(); saved.lfo.stop(); } catch(e) {}
+  }, 1400);
+}
+
+// Called each frame to update all propeller sounds based on current contact positions
+function updateAllPropellers() {
+  var PROP_RANGE = 0.25; // 2.5km = rng_frac 0.25 (plot max = 10km = rng_frac 1.0)
+  var activeCids = {};
+  contacts.forEach(function(c) {
+    if (!c.alive) return;
+    // Only surface ships have audible propellers (not subs — they're quiet)
+    if (c.type.indexOf('ship') < 0) return;
+    if (c.rng <= PROP_RANGE) {
+      var prox = 1.0 - (c.rng / PROP_RANGE); // 1.0 at rng=0, 0 at rng=PROP_RANGE
+      var vol = Math.max(0, prox * prox * 0.32); // squared falloff, max ~0.32
+      activeCids[c.id] = vol;
+      updatePropeller(c.id, vol);
+    }
+  });
+  // Stop propellers for contacts that moved out of range or died
+  Object.keys(propNodes).forEach(function(cid) {
+    if (!activeCids[cid]) stopPropeller(cid);
+  });
+}
+
 // ========== STATE ==========
 var ST=Date.now();
 var selContact=-1;
@@ -381,7 +643,6 @@ var selTarget=-1;
 var tubeStates=['loaded','loaded','empty','empty'];
 var tubeWeapons=['MK-48 ADCAP','MK-48 ADCAP','',''];
 var selTube=0;
-// Sequential step flags per tube: [flooded, doorOpen, presetUploaded]
 var tubeSteps=[[false,false,false],[false,false,false],[false,false,false],[false,false,false]];
 var fireAon=false;
 var torpedoes=[];
@@ -629,6 +890,7 @@ function renderContactTable(){
       '<td><button class="tgt-btn'+(isTgt?' active':'')+'" onclick="designateTargetById(\''+c.id+'\',event)">'+(isTgt?'✓TGT':'TGT')+'</button></td>';
     (function(cid){
       tr.addEventListener('click',function(){
+        playButtonClick();
         var idx=contacts.findIndex(function(x){return x.id===cid;});
         if(idx>=0) selectContact(idx);
       });
@@ -661,6 +923,7 @@ function designateTarget(i,e){
 }
 function designateTargetById(cid,e){
   if(e) e.stopPropagation();
+  playButtonClick();
   var i=contacts.findIndex(function(x){return x.id===cid;});
   if(i<0||!contacts[i].alive) return;
   if(contacts[i].type.indexOf('friendly')>=0){
@@ -703,6 +966,7 @@ function updateTMA(){
 function tubeEl(i){return document.getElementById('te'+i);}
 
 function changeWeapon(i,val){
+  playButtonClick();
   if(tubeStates[i]==='fired'||tubeStates[i]==='flooding'||tubeStates[i]==='rdy'){
     logEvt('Cannot change weapon — tube '+(i+1)+' is '+tubeStates[i].toUpperCase()+'.','lw');
     document.getElementById('wsel'+i).value=tubeWeapons[i]||'EMPTY';
@@ -732,6 +996,7 @@ function changeWeapon(i,val){
 }
 
 function selectTube(i){
+  playButtonClick();
   selTube=i;
   document.querySelectorAll('.tube').forEach(function(t,j){t.classList.toggle('sel',j===i);});
   var n=i+1;
@@ -743,6 +1008,7 @@ function selectTube(i){
 }
 
 function floodTube(){
+  playButtonClick();
   var i=selTube;
   if(tubeStates[i]==='empty'){logEvt('Tube '+(i+1)+': EMPTY — load weapon first.','lw');return;}
   if(tubeStates[i]==='fired'){logEvt('Tube '+(i+1)+': Expended.','lw');return;}
@@ -763,13 +1029,14 @@ function floodTube(){
     document.getElementById('ts'+i).style.color='#00ff41';
     document.getElementById('tf'+i).style.width='100%';
     document.getElementById('tf'+i).style.background='#00ff41';
-    tubeSteps[i][0]=true; // flood complete
+    tubeSteps[i][0]=true;
     if(selTube===i) updateSequenceUI();
     logEvt('Tube '+(i+1)+': Flooded & equalized — READY.','lm');
   },3500);
 }
 
 function openDoor(){
+  playButtonClick();
   var i=selTube;
   if(!tubeSteps[i][0]){logEvt('Tube '+(i+1)+': Flood first.','lw');return;}
   tubeSteps[i][1]=true;
@@ -778,6 +1045,7 @@ function openDoor(){
 }
 
 function uploadPreset(){
+  playButtonClick();
   var i=selTube;
   if(!tubeSteps[i][1]){logEvt('Tube '+(i+1)+': Open outer door first.','lw');return;}
   logEvt('Preset upload — Tube '+(i+1)+'.','lm');
@@ -793,6 +1061,7 @@ function fireTube(){
   var fa=document.getElementById('fa');
   if(fa.disabled) return;
   if(selTarget<0){logEvt('No target designated — Aborted.','lw');return;}
+  playTorpedoLaunch(); // <-- realistic torpedo launch sound
   var i=selTube;
   var wname=tubeWeapons[i]||'WEAPON';
   var tgt=contacts[selTarget];
@@ -832,6 +1101,7 @@ function fireTube(){
 function wireCmd(dir){
   if(!activeWireTorp||!activeWireTorp.alive){logEvt('Wire: No active weapon.','lw');return;}
   if(!activeWireTorp.wire_intact){logEvt('Wire: CUT.','lw');return;}
+  playButtonClick();
   var delta=1.5;
   if(dir==='PORT') activeWireTorp.brg=(activeWireTorp.brg-delta+360)%360;
   if(dir==='STBD') activeWireTorp.brg=(activeWireTorp.brg+delta)%360;
@@ -850,6 +1120,7 @@ function wireSpdSet(v){
   if(activeWireTorp){activeWireTorp.spd_kt=parseInt(v);logEvt('Wire speed: '+v+'kt','lm');}
 }
 function cutWire(){
+  playButtonClick();
   if(!activeWireTorp){logEvt('No active wire.','lw');return;}
   var tubeIdx=activeWireTorp.tube;
   logEvt('WIRE CUT — '+activeWireTorp.id+' autonomous.','lw');
@@ -858,7 +1129,6 @@ function cutWire(){
   showReloadOption(tubeIdx);
 }
 function showReloadOption(tubeIdx){
-  // Don't prompt reload if tube already has a weapon loaded or is currently loading
   var state=tubeStates[tubeIdx];
   if(state==='loaded'||state==='loading'||state==='rdy'||state==='flooding') return;
   var sec=document.getElementById('reload-sec');
@@ -870,6 +1140,7 @@ function showReloadOption(tubeIdx){
   sec.dataset.tube=tubeIdx;
 }
 function reloadTube(){
+  playButtonClick();
   var sec=document.getElementById('reload-sec');
   var tubeIdx=parseInt(sec.dataset.tube);
   var wname=document.getElementById('reload-wsel').value;
@@ -897,6 +1168,7 @@ function reloadTube(){
   },4000);
 }
 function wireHoming(){
+  playButtonClick();
   if(!activeWireTorp){logEvt('No active torpedo.','lw');return;}
   logEvt(activeWireTorp.id+': Homing enabled.','lm');
 }
@@ -947,6 +1219,7 @@ tacC.addEventListener('click',function(e){
     if(d<bestD){bestD=d;best=i;}
   });
   if(best>=0){
+    playButtonClick();
     selectContact(best);
     logEvt('Canvas: '+contacts[best].id+' selected.','lm');
   }
@@ -1004,6 +1277,7 @@ function moveContacts(){
     if(newRng > 1.02){
       c.alive = false;
       logEvt('Contact '+c.id+' — LOST (exited zone).','lt');
+      stopPropeller(c.id);
       pruneDeadContacts();
       renderContactTable();
       return;
@@ -1151,6 +1425,8 @@ function drawTac(){
         ct.alive=false;t.alive=false;
         if(activeWireTorp===t) activeWireTorp=null;
         explosions.push({x:ctx2,y:cty2,r:0,max:42,alive:true});
+        playUnderwaterExplosion(); // <-- realistic underwater explosion
+        stopPropeller(ct.id);
         logEvt('DETONATION: '+t.id+' — '+ct.id+' DESTROYED','lc');
         document.getElementById('wst').textContent='DETONATED';
         document.getElementById('wt-id').textContent='NO WEAPON IN WIRE';
@@ -1192,19 +1468,26 @@ function hexToRgb(hex){
 }
 
 // ========== MAIN LOOP ==========
+var propUpdateTimer = 0;
 function loop(){
   frameCount++;
   moveContacts();
   drawTac();
+
+  // Update propeller sounds every ~15 frames (~250ms at 60fps)
+  propUpdateTimer++;
+  if(propUpdateTimer >= 15) {
+    propUpdateTimer = 0;
+    updateAllPropellers();
+  }
+
   spawnTimer++;
   if(spawnTimer>=SPAWN_INTERVAL){
     spawnTimer=0;
     pruneDeadContacts();
     var alive=contacts.filter(function(c){return c.alive;}).length;
     var hostileAlive=contacts.filter(function(c){return c.alive&&c.type.indexOf('hostile')>=0;}).length;
-    // Always spawn if total is low, and force hostile spawn if no hostiles remain
     if(alive<12) spawnContact();
-    // Guarantee at least 2 hostiles are always present — spawn dedicated hostile if needed
     if(hostileAlive<2){
       spawnHostile();
     }
@@ -1222,7 +1505,6 @@ function toggleSidebar(){
     panel.style.display = 'none';
     panel.style.marginRight = '0';
     btn.textContent = '▶ SHOW PANELS';
-    // Sidebar was 460px wide — give most of that space to the left (plot) col, right col grows only a little
     outerrow.style.gridTemplateColumns = '1fr 480px';
     sidebarVisible = false;
   } else {
@@ -1234,6 +1516,15 @@ function toggleSidebar(){
   }
   setTimeout(resizeTac, 50);
 }
+
+// Wire buttons and other UI elements get click sounds via onclick wrappers added below
+document.querySelectorAll('.wcdir').forEach(function(el) {
+  var orig = el.getAttribute('onclick');
+  // sounds already fired inside wireCmd()
+});
+
+// Attach click sound to all .btn elements that don't already call a sound fn
+document.addEventListener('DOMContentLoaded', function() {});
 
 renderContactTable();
 selectContact(0);
@@ -1252,7 +1543,7 @@ setInterval(function(){
   <div style="font-size:13px;font-weight:bold;color:#00ff41;letter-spacing:3px;border-bottom:1px solid #153a15;
        padding-bottom:8px;margin-bottom:16px">
     ⬡ &nbsp; SEA/SKY-6 CMS — OPERATOR QUICK-REFERENCE GUIDE
-    <span style="font-size:8px;color:#006a14;letter-spacing:2px;float:right;padding-top:3px">REV 18 — UNCLASSIFIED SIM</span>
+    <span style="font-size:8px;color:#006a14;letter-spacing:2px;float:right;padding-top:3px">REV 19 — UNCLASSIFIED SIM</span>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
     <div>
@@ -1343,7 +1634,7 @@ setInterval(function(){
           • <span style="color:#ffaa00">CUT WIRE</span> severs guidance immediately; <span style="color:#00ff41">ENABLE HOMING</span> activates onboard seeker.
         </div>
       </div>
-      <div style="border:1px solid #153a15;background:#060c06;padding:10px">
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
         <div style="font-size:14px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
           <span style="color:#ffaa00">08</span> &nbsp; WEAPON PRESET PARAMETERS
         </div>
@@ -1355,11 +1646,23 @@ setInterval(function(){
           • Click <span style="color:#ffaa00">UPLOAD PRESET</span> on the active tube to push these parameters.
         </div>
       </div>
+      <div style="border:1px solid #153a15;background:#060c06;padding:10px">
+        <div style="font-size:14px;color:#00ff41;letter-spacing:2px;margin-bottom:6px;border-bottom:1px solid #0d220d;padding-bottom:4px">
+          <span style="color:#ffaa00">09</span> &nbsp; ACOUSTIC ENVIRONMENT
+        </div>
+        <div style="font-size:13px;line-height:1.9;color:#009a22">
+          The console uses a <span style="color:#00ff41">noise-based Web Audio engine</span> — all sounds are synthesised from filtered noise, not oscillators.<br>
+          • <span style="color:#00ff41">Buttons</span>: tight bandpass snap (3.2kHz) + body resonance — mechanical key feel<br>
+          • <span style="color:#ffaa00">Torpedo launch</span>: pneumatic ejection thump → water displacement swoosh → bubbling wake<br>
+          • <span style="color:#ff4444">Detonation</span>: distant sub-bass thump + muffled rumble + faint shimmer + long low reverb tail<br>
+          • <span style="color:#4488ff">Propeller noise</span>: surface ships within 2.5km range produce blade-chop AM noise, volume proportional to proximity
+        </div>
+      </div>
     </div>
   </div>
   <div style="margin-top:14px;padding-top:8px;border-top:1px solid #0d220d;font-size:11px;
        color:#004f0e;letter-spacing:1px;text-align:center">
-    SIMULATION ONLY — NOT FOR OPERATIONAL USE &nbsp;|&nbsp; SEA/SKY-6 CMS WEAPONS CONTROL CONSOLE v18 &nbsp;|&nbsp; ALL CONTACTS ARE SIMULATED
+    SIMULATION ONLY — NOT FOR OPERATIONAL USE &nbsp;|&nbsp; SEA/SKY-6 CMS WEAPONS CONTROL CONSOLE v19 &nbsp;|&nbsp; ALL CONTACTS ARE SIMULATED
   </div>
 </div>
 
