@@ -115,6 +115,9 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:8px}
 .lgi{display:flex;align-items:center;gap:3px;color:#006a14}
 .lgdot{width:7px;height:7px;border-radius:50%}
+.sonar-btn{background:#0a1e0a;border:1px solid #1e5c1e;color:#00cc33;font-family:'Courier New',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;cursor:pointer;text-transform:uppercase;border-radius:2px;transition:all .15s}
+.sonar-btn:hover{background:#143d14;border-color:#00cc33;color:#00ff41}
+.sonar-btn.on{background:#003800;border-color:#00ff41;color:#00ff41;box-shadow:0 0 5px rgba(0,255,65,0.4)}
 @media(max-width:800px){
   .outerrow{grid-template-columns:1fr}
   .screens-row{grid-template-columns:1fr 1fr}
@@ -146,6 +149,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
     <div class="hsi"><div class="led lg"></div>CONN</div>
     <div class="hsi" style="color:#ffaa00">ACTIVE TUBE: <span id="actube-hdr" style="color:#00ff41">T1</span></div>
     <div class="hsi" style="color:#ff4444">TARGET: <span id="tgt-hdr" style="color:#ffaa00">NONE</span></div>
+    <div class="hsi"><button class="sonar-btn" id="sonarbtn" onclick="toggleSonarPing()">&#9679; SONAR PING: OFF</button></div>
   </div>
   <div class="stime" id="stime">00:00:00Z</div>
 </div>
@@ -210,6 +214,9 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           <div style="display:flex;gap:4px;align-items:center;width:100%">
             <div style="flex:0 0 30%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px">
               <div style="font-size:11px;color:#006a14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ACT: <span id="wt-id" style="color:#ffaa00">NO WEAPON IN WIRE</span></div>
+              <select id="wt-select" onchange="selectWireTorp(this.value)" style="width:100%;background:#030b03;border:1px solid #153a15;color:#00aa28;font-size:10px;padding:2px;font-family:inherit">
+                <option value="">— NO ACTIVE WEAPONS —</option>
+              </select>
               <div style="display:flex;align-items:center;gap:5px;width:100%">
                 <span style="font-size:11px;color:#006a14;white-space:nowrap;letter-spacing:1px;font-weight:bold">SPD CMD</span>
                 <input type="range" class="grange" min="10" max="55" value="35" step="1" id="wsl" oninput="wireSpdSet(this.value)" style="flex:1;min-width:0;height:3px;cursor:pointer">
@@ -234,6 +241,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
               </div>
             </div>
             <div style="flex:1;display:flex;flex-direction:column;gap:2px;justify-content:center;min-width:0">
+              <button class="btn bd" onclick="selfDestructTorp()" style="width:100%;padding:4px 2px;font-size:9px">SELF-DESTRUCT</button>
               <button class="btn ba" onclick="cutWire()" style="width:100%;padding:4px 2px;font-size:9px">CUT WIRE</button>
               <button class="btn bg" onclick="wireHoming()" style="width:100%;padding:4px 2px;font-size:9px">ENABLE HOMING</button>
             </div>
@@ -354,10 +362,24 @@ var AudioCtx = window.AudioContext || window.webkitAudioContext;
 var audioCtx = null;
 
 function getCtx() {
-  if (!audioCtx) audioCtx = new AudioCtx();
+  if (!audioCtx) {
+    audioCtx = new AudioCtx();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 1.5;
+    var comp = audioCtx.createDynamicsCompressor();
+    comp.threshold.value = -10;
+    comp.knee.value = 12;
+    comp.ratio.value = 4;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.25;
+    masterGain.connect(comp);
+    comp.connect(audioCtx.destination);
+  }
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
+var masterGain = null;
+function out(ctx) { return masterGain; }
 
 // Shared white noise buffer — 2 seconds, generated once, reused by all sounds
 var _noiseBuffer = null;
@@ -410,9 +432,9 @@ function playButtonClick() {
   var hp1 = makeFilter(ctx, 'highpass', 1800, 1);
   var lp1 = makeFilter(ctx, 'lowpass', 5800, 1);
   var env1 = makeGain(ctx, 0);
-  n1.connect(bp1); bp1.connect(hp1); hp1.connect(lp1); lp1.connect(env1); env1.connect(ctx.destination);
+  n1.connect(bp1); bp1.connect(hp1); hp1.connect(lp1); lp1.connect(env1); env1.connect(out(ctx));
   env1.gain.setValueAtTime(0, t);
-  env1.gain.linearRampToValueAtTime(0.52, t + 0.001);
+  env1.gain.linearRampToValueAtTime(0.75, t + 0.001);
   env1.gain.exponentialRampToValueAtTime(0.001, t + 0.026);
   n1.start(t); n1.stop(t + 0.032);
 
@@ -420,11 +442,184 @@ function playButtonClick() {
   var n2 = makeNoise(ctx);
   var bp2 = makeFilter(ctx, 'bandpass', 1100, 4);
   var env2 = makeGain(ctx, 0);
-  n2.connect(bp2); bp2.connect(env2); env2.connect(ctx.destination);
+  n2.connect(bp2); bp2.connect(env2); env2.connect(out(ctx));
   env2.gain.setValueAtTime(0, t);
-  env2.gain.linearRampToValueAtTime(0.17, t + 0.002);
+  env2.gain.linearRampToValueAtTime(0.26, t + 0.002);
   env2.gain.exponentialRampToValueAtTime(0.001, t + 0.042);
   n2.start(t); n2.stop(t + 0.048);
+}
+
+// -------------------------------------------------------
+// FLOOD & EQUALIZE — WATER FILLING TUBE
+// Models seawater rushing into the torpedo tube and the trapped
+// air being displaced/equalized over ~3.5 seconds (matches the
+// flood timer in floodTube()).
+// a) Initial valve-open rush: sharp burst of mid/high noise as
+//    the flood valve opens and water surges in, 0–250ms
+// b) Turbulent water flow body: filtered noise with slow internal
+//    LFO modulation simulating swirling water filling the tube,
+//    0–3.0s, filter sweeps from higher to lower as tube fills
+// c) Air equalization gurgle/bubbling: higher-frequency irregular
+//    AM noise (bubbles escaping as air pocket shrinks),
+//    300ms–3.2s, fades as tube nears full
+// d) Final pressure-equalized thunk: low-passed noise transient
+//    as the tube reaches equilibrium, ~3.3–3.6s
+// -------------------------------------------------------
+function playFloodSound() {
+  var ctx = getCtx();
+  var t = ctx.currentTime;
+
+  // a) Valve-open rush
+  var n1 = makeNoise(ctx);
+  var bp1 = makeFilter(ctx, 'bandpass', 900, 1.0);
+  var hp1 = makeFilter(ctx, 'highpass', 250, 0.7);
+  var env1 = makeGain(ctx, 0);
+  n1.connect(bp1); bp1.connect(hp1); hp1.connect(env1); env1.connect(out(ctx));
+  env1.gain.setValueAtTime(0, t);
+  env1.gain.linearRampToValueAtTime(0.34, t + 0.05);
+  env1.gain.exponentialRampToValueAtTime(0.05, t + 0.25);
+  n1.start(t); n1.stop(t + 0.3);
+
+  // b) Turbulent water flow body — filter sweeps down as tube fills,
+  // with a slow LFO giving the swirl/turbulence texture
+  var n2 = makeNoise(ctx);
+  var lp2 = makeFilter(ctx, 'lowpass', 700, 1.1);
+  var hp2 = makeFilter(ctx, 'highpass', 120, 0.6);
+  var lfo2 = ctx.createOscillator();
+  lfo2.type = 'sine';
+  lfo2.frequency.value = 2.6;
+  var lfoG2 = makeGain(ctx, 90);
+  var env2 = makeGain(ctx, 0);
+  n2.connect(lp2); lp2.connect(hp2); hp2.connect(env2); env2.connect(out(ctx));
+  lfo2.connect(lfoG2); lfoG2.connect(lp2.frequency);
+  // filter sweep: starts higher (rushing) settles lower (filling)
+  lp2.frequency.setValueAtTime(700, t);
+  lp2.frequency.linearRampToValueAtTime(260, t + 3.0);
+  env2.gain.setValueAtTime(0, t);
+  env2.gain.linearRampToValueAtTime(0.30, t + 0.2);
+  env2.gain.setValueAtTime(0.30, t + 1.8);
+  env2.gain.exponentialRampToValueAtTime(0.001, t + 3.1);
+  n2.start(t); n2.stop(t + 3.2);
+  lfo2.start(t); lfo2.stop(t + 3.2);
+
+  // c) Air equalization bubbling/gurgle — higher band, irregular AM
+  var n3 = makeNoise(ctx);
+  var bp3 = makeFilter(ctx, 'bandpass', 1500, 1.6);
+  var lfo3 = ctx.createOscillator();
+  lfo3.type = 'sine';
+  lfo3.frequency.value = 7;
+  var lfo3b = ctx.createOscillator();
+  lfo3b.type = 'sine';
+  lfo3b.frequency.value = 3.3;
+  var lfoG3 = makeGain(ctx, 0.5);
+  var baseG3 = makeGain(ctx, 0.5);
+  var env3 = makeGain(ctx, 0);
+  n3.connect(bp3); bp3.connect(baseG3); baseG3.connect(env3); env3.connect(out(ctx));
+  lfo3.connect(lfoG3); lfoG3.connect(baseG3.gain);
+  // a second slower LFO modulates the first LFO's gain for irregularity
+  var lfoG3b = makeGain(ctx, 0.3);
+  lfo3b.connect(lfoG3b); lfoG3b.connect(lfoG3.gain);
+  lfoG3.gain.setValueAtTime(0.5, t);
+  env3.gain.setValueAtTime(0, t + 0.3);
+  env3.gain.linearRampToValueAtTime(0.10, t + 0.6);
+  env3.gain.setValueAtTime(0.10, t + 2.2);
+  env3.gain.exponentialRampToValueAtTime(0.001, t + 3.2);
+  n3.start(t + 0.3); n3.stop(t + 3.3);
+  lfo3.start(t + 0.3); lfo3.stop(t + 3.3);
+  lfo3b.start(t + 0.3); lfo3b.stop(t + 3.3);
+
+  // d) Final pressure-equalized thunk
+  var n4 = makeNoise(ctx);
+  var lp4 = makeFilter(ctx, 'lowpass', 110, 2.5);
+  var env4 = makeGain(ctx, 0);
+  n4.connect(lp4); lp4.connect(env4); env4.connect(out(ctx));
+  env4.gain.setValueAtTime(0, t + 3.25);
+  env4.gain.linearRampToValueAtTime(0.30, t + 3.30);
+  env4.gain.exponentialRampToValueAtTime(0.001, t + 3.55);
+  n4.start(t + 3.25); n4.stop(t + 3.6);
+}
+
+// -------------------------------------------------------
+// AMBIENT SUBMARINE SONAR PING (active sonar transducer)
+// Realistic active sonar "ping" is a short, low-frequency tonal
+// pulse with a natural resonant decay and reverberant tail — NOT
+// a clean sine beep. Built here from a narrow bandpass-filtered
+// noise burst (gives the metallic transducer ring) layered with
+// a longer, deep low-pass body for the underwater "boom" feel,
+// plus a soft reverberant tail simulating the ping bouncing
+// through the water column.
+// -------------------------------------------------------
+function playSonarPing() {
+  var ctx = getCtx();
+  var t = ctx.currentTime;
+
+  // Clean active-sonar "ting" — lowered fundamental, no deep sub-bass.
+
+  // a) Fundamental tone — lowered slightly
+  var o1 = ctx.createOscillator();
+  o1.type = 'sine';
+  o1.frequency.value = 850;
+  var env1 = makeGain(ctx, 0);
+  o1.connect(env1); env1.connect(out(ctx));
+  env1.gain.setValueAtTime(0, t);
+  env1.gain.linearRampToValueAtTime(0.08, t + 0.01);
+  env1.gain.exponentialRampToValueAtTime(0.0002, t + 1.6);
+  o1.start(t); o1.stop(t + 1.7);
+
+  // b) Octave overtone — subtle shimmer, quiet
+  var o2 = ctx.createOscillator();
+  o2.type = 'sine';
+  o2.frequency.value = 1700;
+  var env2 = makeGain(ctx, 0);
+  o2.connect(env2); env2.connect(out(ctx));
+  env2.gain.setValueAtTime(0, t);
+  env2.gain.linearRampToValueAtTime(0.02, t + 0.006);
+  env2.gain.exponentialRampToValueAtTime(0.00015, t + 0.5);
+  o2.start(t); o2.stop(t + 0.6);
+
+  // c) Sub-octave body — light weight beneath the tone
+  var o3 = ctx.createOscillator();
+  o3.type = 'sine';
+  o3.frequency.value = 425;
+  var env3 = makeGain(ctx, 0);
+  o3.connect(env3); env3.connect(out(ctx));
+  env3.gain.setValueAtTime(0, t);
+  env3.gain.linearRampToValueAtTime(0.085, t + 0.012);
+  env3.gain.exponentialRampToValueAtTime(0.0002, t + 1.4);
+  o3.start(t); o3.stop(t + 1.5);
+
+  // d) Very soft reverberant echo tail — quieter, longer decay
+  var o5 = ctx.createOscillator();
+  o5.type = 'sine';
+  o5.frequency.value = 850;
+  var env5 = makeGain(ctx, 0);
+  o5.connect(env5); env5.connect(out(ctx));
+  env5.gain.setValueAtTime(0, t + 0.05);
+  env5.gain.linearRampToValueAtTime(0.0175, t + 0.08);
+  env5.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+  o5.start(t + 0.05); o5.stop(t + 2.5);
+}
+
+// Sonar ping ambient toggle — pings every 5 seconds while enabled
+var sonarPingEnabled = false;
+var sonarPingInterval = null;
+function toggleSonarPing() {
+  playButtonClick();
+  sonarPingEnabled = !sonarPingEnabled;
+  var btn = document.getElementById('sonarbtn');
+  if (sonarPingEnabled) {
+    btn.classList.add('on');
+    btn.textContent = '\u25CF SONAR PING: ON';
+    // fire one immediately, then every 5 seconds
+    playSonarPing();
+    logEvt('Active sonar ping — ENABLED (5s interval).','lm');
+    sonarPingInterval = setInterval(playSonarPing, 5000);
+  } else {
+    btn.classList.remove('on');
+    btn.textContent = '\u25CF SONAR PING: OFF';
+    logEvt('Active sonar ping — DISABLED.','lw');
+    if (sonarPingInterval) { clearInterval(sonarPingInterval); sonarPingInterval = null; }
+  }
 }
 
 // -------------------------------------------------------
@@ -447,9 +642,9 @@ function playTorpedoLaunch() {
   var lp1 = makeFilter(ctx, 'lowpass', 140, 3);
   var hp1 = makeFilter(ctx, 'highpass', 35, 0.7);
   var env1 = makeGain(ctx, 0);
-  n1.connect(lp1); lp1.connect(hp1); hp1.connect(env1); env1.connect(ctx.destination);
+  n1.connect(lp1); lp1.connect(hp1); hp1.connect(env1); env1.connect(out(ctx));
   env1.gain.setValueAtTime(0, t);
-  env1.gain.linearRampToValueAtTime(0.6, t + 0.012);
+  env1.gain.linearRampToValueAtTime(1.0, t + 0.012);
   env1.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
   n1.start(t); n1.stop(t + 0.2);
 
@@ -458,9 +653,9 @@ function playTorpedoLaunch() {
   var bp2 = makeFilter(ctx, 'bandpass', 380, 1.3);
   var hp2 = makeFilter(ctx, 'highpass', 150, 0.6);
   var env2 = makeGain(ctx, 0);
-  n2.connect(bp2); bp2.connect(hp2); hp2.connect(env2); env2.connect(ctx.destination);
+  n2.connect(bp2); bp2.connect(hp2); hp2.connect(env2); env2.connect(out(ctx));
   env2.gain.setValueAtTime(0, t + 0.02);
-  env2.gain.linearRampToValueAtTime(0.32, t + 0.09);
+  env2.gain.linearRampToValueAtTime(0.55, t + 0.09);
   env2.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
   n2.start(t + 0.02); n2.stop(t + 0.45);
 
@@ -472,10 +667,10 @@ function playTorpedoLaunch() {
   var lfoG3 = makeGain(ctx, 0.14);
   var baseG3 = makeGain(ctx, 0.21);
   var env3 = makeGain(ctx, 0);
-  n3.connect(lp3); lp3.connect(baseG3); baseG3.connect(env3); env3.connect(ctx.destination);
+  n3.connect(lp3); lp3.connect(baseG3); baseG3.connect(env3); env3.connect(out(ctx));
   lfo3.connect(lfoG3); lfoG3.connect(baseG3.gain);
   env3.gain.setValueAtTime(0, t + 0.3);
-  env3.gain.linearRampToValueAtTime(0.85, t + 0.42);
+  env3.gain.linearRampToValueAtTime(1.3, t + 0.42);
   env3.gain.exponentialRampToValueAtTime(0.001, t + 1.3);
   n3.start(t + 0.3); n3.stop(t + 1.4);
   lfo3.start(t + 0.3); lfo3.stop(t + 1.4);
@@ -484,9 +679,9 @@ function playTorpedoLaunch() {
   var n4 = makeNoise(ctx);
   var lp4 = makeFilter(ctx, 'lowpass', 70, 4);
   var env4 = makeGain(ctx, 0);
-  n4.connect(lp4); lp4.connect(env4); env4.connect(ctx.destination);
+  n4.connect(lp4); lp4.connect(env4); env4.connect(out(ctx));
   env4.gain.setValueAtTime(0, t);
-  env4.gain.linearRampToValueAtTime(0.55, t + 0.02);
+  env4.gain.linearRampToValueAtTime(0.9, t + 0.02);
   env4.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
   n4.start(t); n4.stop(t + 0.32);
 }
@@ -507,7 +702,7 @@ function playUnderwaterExplosion() {
   var lp1 = makeFilter(ctx, 'lowpass', 45, 3);
   var hp1 = makeFilter(ctx, 'highpass', 18, 0.5);
   var env1 = makeGain(ctx, 0);
-  n1.connect(lp1); lp1.connect(hp1); hp1.connect(env1); env1.connect(ctx.destination);
+  n1.connect(lp1); lp1.connect(hp1); hp1.connect(env1); env1.connect(out(ctx));
   env1.gain.setValueAtTime(0, t);
   env1.gain.linearRampToValueAtTime(0.55, t + 0.18);
   env1.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
@@ -518,7 +713,7 @@ function playUnderwaterExplosion() {
   var bp2 = makeFilter(ctx, 'bandpass', 90, 0.7);
   var lp2b = makeFilter(ctx, 'lowpass', 160, 0.5);
   var env2 = makeGain(ctx, 0);
-  n2.connect(bp2); bp2.connect(lp2b); lp2b.connect(env2); env2.connect(ctx.destination);
+  n2.connect(bp2); bp2.connect(lp2b); lp2b.connect(env2); env2.connect(out(ctx));
   env2.gain.setValueAtTime(0, t);
   env2.gain.linearRampToValueAtTime(0.34, t + 0.25);
   env2.gain.exponentialRampToValueAtTime(0.001, t + 2.6);
@@ -529,7 +724,7 @@ function playUnderwaterExplosion() {
   var bp3 = makeFilter(ctx, 'bandpass', 600, 1.0);
   var lp3b = makeFilter(ctx, 'lowpass', 900, 0.6);
   var env3 = makeGain(ctx, 0);
-  n3.connect(bp3); bp3.connect(lp3b); lp3b.connect(env3); env3.connect(ctx.destination);
+  n3.connect(bp3); bp3.connect(lp3b); lp3b.connect(env3); env3.connect(out(ctx));
   env3.gain.setValueAtTime(0, t + 0.15);
   env3.gain.linearRampToValueAtTime(0.06, t + 0.35);
   env3.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
@@ -540,7 +735,7 @@ function playUnderwaterExplosion() {
   var lp4 = makeFilter(ctx, 'lowpass', 180, 0.5);
   var hp4 = makeFilter(ctx, 'highpass', 30, 0.5);
   var env4 = makeGain(ctx, 0);
-  n4.connect(lp4); lp4.connect(hp4); hp4.connect(env4); env4.connect(ctx.destination);
+  n4.connect(lp4); lp4.connect(hp4); hp4.connect(env4); env4.connect(out(ctx));
   env4.gain.setValueAtTime(0, t + 0.3);
   env4.gain.linearRampToValueAtTime(0.18, t + 0.7);
   env4.gain.exponentialRampToValueAtTime(0.001, t + 4.0);
@@ -576,14 +771,14 @@ function startPropeller(cid, vol) {
 
   n.connect(bp); bp.connect(hp); hp.connect(carrierGain);
   lfo.connect(lfoDepth); lfoDepth.connect(carrierGain.gain);
-  carrierGain.connect(masterGain); masterGain.connect(ctx.destination);
+  carrierGain.connect(masterGain); masterGain.connect(out(ctx));
 
   // Shimmer (higher harmonic)
   var n2 = makeNoise(ctx);
   n2.loop = true;
   var bp2 = makeFilter(ctx, 'bandpass', 880, 2.5);
   var shimGain = makeGain(ctx, 0);
-  n2.connect(bp2); bp2.connect(shimGain); shimGain.connect(ctx.destination);
+  n2.connect(bp2); bp2.connect(shimGain); shimGain.connect(out(ctx));
 
   n.start(t); n2.start(t); lfo.start(t);
 
@@ -1022,6 +1217,7 @@ function floodTube(){
   document.getElementById('tf'+i).style.background='#ffaa00';
   logEvt('Tube '+(i+1)+': Flood & equalize initiated.','lw');
   document.getElementById('floodbtn').disabled=true;
+  playFloodSound(); // <-- realistic water-filling / flood & equalize sound
   setTimeout(function(){
     tubeStates[i]='rdy';
     tubeEl(i).className='tube rdy'+(selTube===i?' sel':'');
@@ -1085,6 +1281,7 @@ function fireTube(){
   };
   torpedoes.push(torp);
   activeWireTorp=torp;
+  refreshWireTorpSelector();
   document.getElementById('wt-id').textContent=torp.id+' → '+tgt.id;
   document.getElementById('wt-id').style.color='#00ff41';
   document.getElementById('ws-disp').textContent=spd+'kt';
@@ -1098,6 +1295,66 @@ function fireTube(){
 }
 
 // ========== WIRE GUIDANCE ==========
+function refreshWireTorpSelector(){
+  var sel=document.getElementById('wt-select');
+  if(!sel) return;
+  var prevVal=sel.value;
+  sel.innerHTML='';
+  var guidable=torpedoes.filter(function(t){return t.alive&&t.wire_intact;});
+  if(guidable.length===0){
+    var opt=document.createElement('option');
+    opt.value='';opt.textContent='— NO ACTIVE WEAPONS —';
+    sel.appendChild(opt);
+    sel.value='';
+    return;
+  }
+  guidable.forEach(function(t){
+    var opt=document.createElement('option');
+    opt.value=t.id;
+    var tgt=contacts[t.contactIdx];
+    opt.textContent=t.id+' → '+(tgt?tgt.id:'?')+' (TUBE '+(t.tube+1)+')';
+    sel.appendChild(opt);
+  });
+  // keep current selection if still valid, else default to activeWireTorp or first
+  var stillValid=guidable.some(function(t){return t.id===prevVal;});
+  if(stillValid){
+    sel.value=prevVal;
+  } else if(activeWireTorp&&guidable.indexOf(activeWireTorp)>=0){
+    sel.value=activeWireTorp.id;
+  } else {
+    sel.value=guidable[0].id;
+    activeWireTorp=guidable[0];
+    updateWireDisplay();
+  }
+}
+function selectWireTorp(id){
+  if(!id){activeWireTorp=null;updateWireDisplay();return;}
+  var t=torpedoes.find(function(t){return t.id===id&&t.alive&&t.wire_intact;});
+  if(!t){logEvt('Wire: weapon '+id+' not available.','lw');refreshWireTorpSelector();return;}
+  activeWireTorp=t;
+  playButtonClick();
+  logEvt('Wire control switched to '+t.id+'.','lm');
+  updateWireDisplay();
+}
+function updateWireDisplay(){
+  var idEl=document.getElementById('wt-id');
+  if(!activeWireTorp){
+    idEl.textContent='NO WEAPON IN WIRE';
+    idEl.style.color='#ffaa00';
+    document.getElementById('ws-disp').textContent='—';
+    document.getElementById('wst').textContent='STANDBY';
+    document.getElementById('wpo').textContent='0m';
+    return;
+  }
+  var tgt=contacts[activeWireTorp.contactIdx];
+  idEl.textContent=activeWireTorp.id+' → '+(tgt?tgt.id:'?');
+  idEl.style.color='#00ff41';
+  document.getElementById('ws-disp').textContent=activeWireTorp.spd_kt+'kt';
+  document.getElementById('wsl').value=activeWireTorp.spd_kt;
+  document.getElementById('wsd').textContent=activeWireTorp.spd_kt+'kt';
+  document.getElementById('wst').textContent=activeWireTorp.wire_intact?'INTACT — GUIDING':'CUT — AUTONOMOUS';
+  document.getElementById('wpo').textContent=Math.round(activeWireTorp.wire_paid)+'m';
+}
 function wireCmd(dir){
   if(!activeWireTorp||!activeWireTorp.alive){logEvt('Wire: No active weapon.','lw');return;}
   if(!activeWireTorp.wire_intact){logEvt('Wire: CUT.','lw');return;}
@@ -1119,6 +1376,28 @@ function wireSpdSet(v){
   document.getElementById('ws-disp').textContent=v+'kt';
   if(activeWireTorp){activeWireTorp.spd_kt=parseInt(v);logEvt('Wire speed: '+v+'kt','lm');}
 }
+function selfDestructTorp(){
+  playButtonClick();
+  if(!activeWireTorp||!activeWireTorp.alive){logEvt('Self-destruct: No active weapon.','lw');return;}
+  var t=activeWireTorp;
+  var dpr=window.devicePixelRatio||1;
+  var W=tacC.width/dpr,H=tacC.height/dpr;
+  var cx=W/2,cy=H/2;
+  var R=Math.min(W,H)*0.40;
+  var ang=(t.brg-90)*Math.PI/180;
+  var ttx=cx+Math.cos(ang)*R*t.rng_frac;
+  var tty=cy+Math.sin(ang)*R*t.rng_frac;
+  t.alive=false;
+  if(t.wire_intact) t.wire_intact=false;
+  activeWireTorp=null;
+  explosions.push({x:ttx,y:tty,r:0,max:30,alive:true});
+  playUnderwaterExplosion();
+  logEvt(t.id+': SELF-DESTRUCT — weapon scuttled.','lc');
+  document.getElementById('wst').textContent='SELF-DESTRUCTED';
+  refreshWireTorpSelector();
+  updateWireDisplay();
+  showReloadOption(t.tube);
+}
 function cutWire(){
   playButtonClick();
   if(!activeWireTorp){logEvt('No active wire.','lw');return;}
@@ -1126,6 +1405,8 @@ function cutWire(){
   logEvt('WIRE CUT — '+activeWireTorp.id+' autonomous.','lw');
   document.getElementById('wst').textContent='CUT — AUTONOMOUS';
   activeWireTorp.wire_intact=false;activeWireTorp=null;
+  refreshWireTorpSelector();
+  updateWireDisplay();
   showReloadOption(tubeIdx);
 }
 function showReloadOption(tubeIdx){
@@ -1170,7 +1451,8 @@ function reloadTube(){
 function wireHoming(){
   playButtonClick();
   if(!activeWireTorp){logEvt('No active torpedo.','lw');return;}
-  logEvt(activeWireTorp.id+': Homing enabled.','lm');
+  activeWireTorp.homing=true;
+  logEvt(activeWireTorp.id+': Homing enabled — seeker active.','lm');
 }
 
 // ========== KEYBINDINGS ==========
@@ -1392,21 +1674,61 @@ function drawTac(){
     t.rng_frac+=delta_frac;
     if(t.wire_intact){
       t.wire_paid+=spd_ms/60;
-      document.getElementById('wpo').textContent=Math.round(t.wire_paid)+'m';
+      if(activeWireTorp===t) document.getElementById('wpo').textContent=Math.round(t.wire_paid)+'m';
       if(t.wire_paid>=WIRE_MAX){
         t.wire_intact=false;
         if(activeWireTorp===t) activeWireTorp=null;
         logEvt(t.id+': Wire paid out — autonomous.','lw');
         document.getElementById('wst').textContent='PAID OUT';
+        refreshWireTorpSelector();
+        updateWireDisplay();
         showReloadOption(t.tube);
       }
     }
     var ang=(t.brg-90)*Math.PI/180;
     var ttx=cx+Math.cos(ang)*R*t.rng_frac;
     var tty=cy+Math.sin(ang)*R*t.rng_frac;
+
+    // Homing seeker: once enabled and target is within acquisition range,
+    // steer torpedo bearing toward the target's current position each tick.
+    var ct=contacts[t.contactIdx];
+    var seekerActive=false;
+    if(t.homing&&ct&&ct.alive){
+      var ctangH=(ct.brg-90)*Math.PI/180;
+      var ctxH=cx+Math.cos(ctangH)*R*ct.rng;
+      var ctyH=cy+Math.sin(ctangH)*R*ct.rng;
+      var ddx=ctxH-ttx,ddy=ctyH-tty;
+      var distToTgt=Math.sqrt(ddx*ddx+ddy*ddy);
+      var SEEKER_RANGE=R*0.45; // acquisition cone range on the plot
+      if(distToTgt<SEEKER_RANGE){
+        seekerActive=true;
+        var desiredAng=Math.atan2(ddy,ddx);
+        var desiredBrg=(desiredAng*180/Math.PI+90+360)%360;
+        var diff=((desiredBrg-t.brg+540)%360)-180; // shortest signed diff
+        var turnRate=4; // deg per tick — aggressive terminal homing
+        if(Math.abs(diff)<turnRate) t.brg=desiredBrg;
+        else t.brg=(t.brg+Math.sign(diff)*turnRate+360)%360;
+        ang=(t.brg-90)*Math.PI/180;
+        ttx=cx+Math.cos(ang)*R*t.rng_frac;
+        tty=cy+Math.sin(ang)*R*t.rng_frac;
+      }
+    }
+
     if(t.wire_intact){
       tacX.beginPath();tacX.moveTo(cx,cy);tacX.lineTo(ttx,tty);
       tacX.strokeStyle='rgba(255,255,160,0.2)';tacX.lineWidth=0.6;tacX.stroke();
+    }
+    // Homing seeker concentric arcs ahead of the torpedo (antenna-icon style)
+    if(t.homing){
+      var arcColor=seekerActive?'rgba(255,80,80,0.85)':'rgba(255,200,80,0.55)';
+      for(var ai=1;ai<=3;ai++){
+        var arcR=6+ai*6;
+        tacX.beginPath();
+        tacX.arc(ttx,tty,arcR,ang-0.55,ang+0.55);
+        tacX.strokeStyle=arcColor;
+        tacX.lineWidth=1.1;
+        tacX.stroke();
+      }
     }
     tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
     tacX.fillStyle='#ffffff';tacX.fill();
@@ -1415,7 +1737,6 @@ function drawTac(){
     tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
     tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
     tacX.fillText(t.id,ttx+5,tty-5);
-    var ct=contacts[t.contactIdx];
     if(ct&&ct.alive){
       var ctang=(ct.brg-90)*Math.PI/180;
       var ctx2=cx+Math.cos(ctang)*R*ct.rng;
@@ -1431,13 +1752,19 @@ function drawTac(){
         document.getElementById('wst').textContent='DETONATED';
         document.getElementById('wt-id').textContent='NO WEAPON IN WIRE';
         document.getElementById('wt-id').style.color='#ffaa00';
+        refreshWireTorpSelector();
+        updateWireDisplay();
         if(selTarget===t.contactIdx){selTarget=-1;document.getElementById('tgt-hdr').textContent='NONE';document.getElementById('tgt-hdr').style.color='#ffaa00';}
         pruneDeadContacts();
         renderContactTable();
         showReloadOption(t.tube);
       }
     }
-    if(t.rng_frac>1.5){t.alive=false;showReloadOption(t.tube);}
+    if(t.rng_frac>1.5){
+      t.alive=false;
+      if(activeWireTorp===t){activeWireTorp=null;refreshWireTorpSelector();updateWireDisplay();}
+      showReloadOption(t.tube);
+    }
   });
   explosions.forEach(function(ex){
     if(!ex.alive) return;
@@ -1653,9 +1980,11 @@ setInterval(function(){
         <div style="font-size:13px;line-height:1.9;color:#009a22">
           The console uses a <span style="color:#00ff41">noise-based Web Audio engine</span> — all sounds are synthesised from filtered noise, not oscillators.<br>
           • <span style="color:#00ff41">Buttons</span>: tight bandpass snap (3.2kHz) + body resonance — mechanical key feel<br>
+          • <span style="color:#ffaa00">Flood &amp; equalize</span>: valve-open rush → turbulent water fill (filter sweep) → air-bubble gurgle → pressure-equalized thunk, ~3.5s total<br>
           • <span style="color:#ffaa00">Torpedo launch</span>: pneumatic ejection thump → water displacement swoosh → bubbling wake<br>
           • <span style="color:#ff4444">Detonation</span>: distant sub-bass thump + muffled rumble + faint shimmer + long low reverb tail<br>
-          • <span style="color:#4488ff">Propeller noise</span>: surface ships within 2.5km range produce blade-chop AM noise, volume proportional to proximity
+          • <span style="color:#4488ff">Propeller noise</span>: surface ships within 2.5km range produce blade-chop AM noise, volume proportional to proximity<br>
+          • <span style="color:#00ff41">Sonar ping toggle</span> (header bar): when enabled, emits a low-frequency active sonar ping every 5 seconds — built from filtered noise bursts (220Hz transducer ring + 95Hz body thump + reverberant tail), not a synthetic beep
         </div>
       </div>
     </div>
