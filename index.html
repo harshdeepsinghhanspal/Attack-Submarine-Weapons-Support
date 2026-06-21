@@ -1911,18 +1911,6 @@ function drawTac(){
       }
     }
 
-    // Terminal approach — a small seeker antenna ahead of the torpedo sweeps
-    // side to side as it closes in, instead of the body splitting apart.
-    var sweepActive=false,sweepAng=ang;
-    if(!t.isMissile&&ct&&ct.alive&&typeof distToTgt!=='undefined'){
-      var APPROACH_RANGE=R*0.26;
-      if(distToTgt<APPROACH_RANGE){
-        sweepActive=true;
-        var sweepAmp=0.30+(1-(distToTgt/APPROACH_RANGE))*0.35; // widens slightly as it closes
-        sweepAng=ang+Math.sin(frameCount*0.14+t.rng_frac*30)*sweepAmp;
-      }
-    }
-
     if(!t.isMissile){
       // Torpedo: draw wire line
       if(t.wire_intact){
@@ -1949,18 +1937,6 @@ function drawTac(){
       tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
       tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
       tacX.fillText(t.id,ttx+5,tty-5);
-      // Sweeping seeker antenna — pivots from the nose, scanning ahead on terminal approach
-      if(sweepActive){
-        var noseX=ttx+Math.cos(ang)*10,noseY=tty+Math.sin(ang)*10;
-        var antTipX=noseX+Math.cos(sweepAng)*8,antTipY=noseY+Math.sin(sweepAng)*8;
-        tacX.beginPath();tacX.moveTo(noseX,noseY);tacX.lineTo(antTipX,antTipY);
-        tacX.strokeStyle='rgba(120,255,255,0.85)';tacX.lineWidth=1;tacX.stroke();
-        // thin crossbar at the tip reads as a sensor head, not a second body
-        var crossAng=sweepAng+Math.PI/2;
-        var crx=Math.cos(crossAng)*2,cry=Math.sin(crossAng)*2;
-        tacX.beginPath();tacX.moveTo(antTipX-crx,antTipY-cry);tacX.lineTo(antTipX+crx,antTipY+cry);
-        tacX.strokeStyle='rgba(150,255,255,0.9)';tacX.lineWidth=1;tacX.stroke();
-      }
     } else {
       // Cruise missile: orange diamond with longer diagonal pointing toward target (forward)
       // ang is the direction of travel; we draw a diamond rotated so its tip points forward
