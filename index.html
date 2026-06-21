@@ -1911,20 +1911,15 @@ function drawTac(){
       }
     }
 
-    // Terminal dash — as the torpedo closes inside split range it breaks into a
-    // shuddering pair tracing a smooth snake-pattern weave into the target.
-    var splitActive=false,snakeX=0,snakeY=0,splitOffset=0,snakePhase=0,perpAngS=ang+Math.PI/2;
+    // Terminal approach — a small seeker antenna ahead of the torpedo sweeps
+    // side to side as it closes in, instead of the body splitting apart.
+    var sweepActive=false,sweepAng=ang;
     if(!t.isMissile&&ct&&ct.alive&&typeof distToTgt!=='undefined'){
-      var SPLIT_RANGE=R*0.16;
-      if(distToTgt<SPLIT_RANGE){
-        splitActive=true;
-        var closeness=1-(distToTgt/SPLIT_RANGE); // 0 → just entered, 1 → right on top of target
-        snakePhase=t.rng_frac*260;
-        var snakeAmp=4+closeness*9;
-        var snakeOff=Math.sin(snakePhase)*snakeAmp;
-        snakeX=Math.cos(perpAngS)*snakeOff;
-        snakeY=Math.sin(perpAngS)*snakeOff;
-        splitOffset=2.5+closeness*4.5;
+      var APPROACH_RANGE=R*0.26;
+      if(distToTgt<APPROACH_RANGE){
+        sweepActive=true;
+        var sweepAmp=0.30+(1-(distToTgt/APPROACH_RANGE))*0.35; // widens slightly as it closes
+        sweepAng=ang+Math.sin(frameCount*0.14+t.rng_frac*30)*sweepAmp;
       }
     }
 
@@ -1946,30 +1941,22 @@ function drawTac(){
           tacX.stroke();
         }
       }
-      // Torpedo dot(s) — normal single body, or violently shuddering split pair on terminal approach
-      if(splitActive){
-        var baseX=ttx+snakeX,baseY=tty+snakeY;
-        var jit1=Math.sin(snakePhase*1.7)*1.6;
-        var jit2=Math.sin(snakePhase*1.7+Math.PI)*1.6;
-        var s1x=baseX+Math.cos(perpAngS)*(splitOffset+jit1),s1y=baseY+Math.sin(perpAngS)*(splitOffset+jit1);
-        var s2x=baseX-Math.cos(perpAngS)*(splitOffset+jit2),s2y=baseY-Math.sin(perpAngS)*(splitOffset+jit2);
-        [[s1x,s1y],[s2x,s2y]].forEach(function(p){
-          tacX.beginPath();tacX.arc(p[0],p[1],3.2,0,Math.PI*2);
-          tacX.fillStyle='#ffffff';tacX.fill();
-          tacX.beginPath();tacX.moveTo(p[0],p[1]);
-          tacX.lineTo(p[0]+Math.cos(ang)*9,p[1]+Math.sin(ang)*9);
-          tacX.strokeStyle='rgba(255,255,200,0.85)';tacX.lineWidth=1.1;tacX.stroke();
-        });
-        tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
-        tacX.fillText(t.id,baseX+5,baseY-9);
-      } else {
-        tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
-        tacX.fillStyle='#ffffff';tacX.fill();
-        tacX.beginPath();tacX.moveTo(ttx,tty);
-        tacX.lineTo(ttx+Math.cos(ang)*10,tty+Math.sin(ang)*10);
-        tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
-        tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
-        tacX.fillText(t.id,ttx+5,tty-5);
+      // Torpedo dot (white)
+      tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
+      tacX.fillStyle='#ffffff';tacX.fill();
+      tacX.beginPath();tacX.moveTo(ttx,tty);
+      tacX.lineTo(ttx+Math.cos(ang)*10,tty+Math.sin(ang)*10);
+      tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
+      tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
+      tacX.fillText(t.id,ttx+5,tty-5);
+      // Sweeping seeker antenna — pivots from the nose, scanning ahead on terminal approach
+      if(sweepActive){
+        var noseX=ttx+Math.cos(ang)*10,noseY=tty+Math.sin(ang)*10;
+        var antTipX=noseX+Math.cos(sweepAng)*8,antTipY=noseY+Math.sin(sweepAng)*8;
+        tacX.beginPath();tacX.moveTo(noseX,noseY);tacX.lineTo(antTipX,antTipY);
+        tacX.strokeStyle='rgba(120,255,255,0.85)';tacX.lineWidth=1;tacX.stroke();
+        tacX.beginPath();tacX.arc(antTipX,antTipY,1.6,0,Math.PI*2);
+        tacX.fillStyle='rgba(150,255,255,0.95)';tacX.fill();
       }
     } else {
       // Cruise missile: orange diamond with longer diagonal pointing toward target (forward)
