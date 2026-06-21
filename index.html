@@ -1955,8 +1955,11 @@ function drawTac(){
         var antTipX=noseX+Math.cos(sweepAng)*8,antTipY=noseY+Math.sin(sweepAng)*8;
         tacX.beginPath();tacX.moveTo(noseX,noseY);tacX.lineTo(antTipX,antTipY);
         tacX.strokeStyle='rgba(120,255,255,0.85)';tacX.lineWidth=1;tacX.stroke();
-        tacX.beginPath();tacX.arc(antTipX,antTipY,1.6,0,Math.PI*2);
-        tacX.fillStyle='rgba(150,255,255,0.95)';tacX.fill();
+        // thin crossbar at the tip reads as a sensor head, not a second body
+        var crossAng=sweepAng+Math.PI/2;
+        var crx=Math.cos(crossAng)*2,cry=Math.sin(crossAng)*2;
+        tacX.beginPath();tacX.moveTo(antTipX-crx,antTipY-cry);tacX.lineTo(antTipX+crx,antTipY+cry);
+        tacX.strokeStyle='rgba(150,255,255,0.9)';tacX.lineWidth=1;tacX.stroke();
       }
     } else {
       // Cruise missile: orange diamond with longer diagonal pointing toward target (forward)
