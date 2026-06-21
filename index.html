@@ -55,9 +55,6 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .tube.rdy{border-color:#00ff41;background:#001200}
 .tube.fired{border-color:#ff4444;background:#0f0000}
 .tube.sel{border-color:#00ff41 !important;background:#002800 !important;box-shadow:0 0 8px rgba(0,255,65,0.35) inset, 0 0 6px rgba(0,255,65,0.25)}
-.tube:nth-child(n+5):not(.loaded):not(.rdy):not(.fired):not(.flood){border-color:#7a5500}
-.tube.loaded:nth-child(n+5){border-color:#ffaa00}
-.tube:nth-child(n+5):hover{border-color:#ffcc44}
 .tnum{font-size:8px;color:#006a14;letter-spacing:1px}
 .tube.sel .tnum{color:#00ff41;font-weight:bold}
 .ttype{font-size:10px;color:#00cc33;font-weight:bold;margin:1px 0}
@@ -83,7 +80,10 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .bd.arm{background:#3d0000;border-color:#ff2222;color:#ff4444;box-shadow:0 0 10px rgba(255,34,34,0.6),inset 0 1px 0 rgba(255,100,100,0.2);animation:bk .7s infinite}
 .bd.pressed{background:#1a0000;border-color:#ff0000;color:#ff6666;animation:none}
 .btn-done{background:#003d00 !important;border-color:#00cc33 !important;color:#00ff41 !important;box-shadow:0 0 8px rgba(0,255,65,0.35),inset 0 1px 0 rgba(0,255,65,0.2) !important;animation:none !important}
-.ilrow{display:flex;align-items:center;justify-content:space-between;padding:3px 6px;background:#061406;border:1px solid #1a4a1a;margin-bottom:3px;gap:4px}
+.tube.missile-tube{border-color:#5a3800;background:#120900}
+.tube.missile-tube .tnum{color:#cc8800}
+.tube.missile-tube:hover{border-color:#cc8800}
+.tube.missile-tube.sel{border-color:#ffaa00 !important;background:#1a0d00 !important;box-shadow:0 0 8px rgba(255,170,0,0.35) inset, 0 0 6px rgba(255,170,0,0.25)}
 .illb{font-size:9px;color:#00cc33;letter-spacing:1px;white-space:nowrap;font-weight:bold}
 .tog{width:28px;height:14px;background:#2a0000;border:1px solid #880000;border-radius:7px;cursor:pointer;position:relative;transition:all .2s;flex-shrink:0}
 .tog.on{background:#003800;border-color:#00ff41;box-shadow:0 0 4px rgba(0,255,65,0.4)}
@@ -298,7 +298,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
-        <div class="tube loaded" id="te4" onclick="selectTube(4)">
+        <div class="tube loaded missile-tube" id="te4" onclick="selectTube(4)">
           <div class="tnum">MISSILE: TUBE-1</div>
           <div class="ttype" id="ttype4" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts4" style="color:#00aa28">LOADED</div>
@@ -308,7 +308,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
-        <div class="tube loaded" id="te5" onclick="selectTube(5)">
+        <div class="tube loaded missile-tube" id="te5" onclick="selectTube(5)">
           <div class="tnum">MISSILE: TUBE-2</div>
           <div class="ttype" id="ttype5" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts5" style="color:#00aa28">LOADED</div>
@@ -318,7 +318,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
-        <div class="tube loaded" id="te6" onclick="selectTube(6)">
+        <div class="tube loaded missile-tube" id="te6" onclick="selectTube(6)">
           <div class="tnum">MISSILE: TUBE-3</div>
           <div class="ttype" id="ttype6" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts6" style="color:#00aa28">LOADED</div>
@@ -328,7 +328,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
-        <div class="tube loaded" id="te7" onclick="selectTube(7)">
+        <div class="tube loaded missile-tube" id="te7" onclick="selectTube(7)">
           <div class="tnum">MISSILE: TUBE-4</div>
           <div class="ttype" id="ttype7" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts7" style="color:#00aa28">LOADED</div>
@@ -339,15 +339,8 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
       </div>
-      <div id="reload-sec" style="display:none;margin-bottom:4px;padding:4px;border:1px solid #1a5a1a;background:#020a02">
-        <div style="font-size:7px;color:#006a14;letter-spacing:1px;margin-bottom:3px">TUBE <span id="reload-tube-lbl">—</span> — AVAILABLE FOR RELOAD</div>
-        <select class="gsel" id="reload-wsel" style="margin-bottom:3px">
-          <option value="MK-48 ADCAP">MK-48 ADCAP</option>
-        </select>
-        <button class="btn bg" onclick="reloadTube()">&#8635; RELOAD TUBE <span id="reload-btn-lbl">—</span></button>
-      </div>
       <div class="wactn">
-        <button class="btn bg" onclick="floodTube()" id="floodbtn">FLOOD & EQUALIZE — <span id="floodlbl">TORP: TUBE-1</span></button>
+        <button class="btn bg" onclick="floodTube()" id="floodbtn">FLOOD &amp; EQUALIZE — <span id="floodlbl">TORP: TUBE-1</span></button>
         <button class="btn bg" onclick="openDoor()" id="doorbtn" disabled>OUTER DOOR OPEN — <span id="doorlbl">TORP: TUBE-1</span></button>
         <button class="btn ba" onclick="uploadPreset()" id="presetbtn" disabled>UPLOAD PRESET — <span id="presetlbl">TORP: TUBE-1</span></button>
       </div>
@@ -1026,7 +1019,7 @@ function updateSequenceUI(){
     presetBtn.disabled=true;
     fa.disabled=true;
     presetPnl.classList.remove('preset-glow');
-    seqStatus.textContent=tubeStates[i]==='fired'?'Tube expended — no reload available.':'Load a weapon first.';
+    seqStatus.textContent=tubeStates[i]==='fired'?'Tube expended — reload to continue.':'Load a weapon first.';
     seqStatus.style.color='#ff4444';
     return;
   }
@@ -1319,6 +1312,11 @@ function updateTMA(){
 
 // ========== TUBE FUNCTIONS ==========
 function tubeEl(i){return document.getElementById('te'+i);}
+function tubeClass(i,state){
+  var msl=tubeIsMissile[i]?' missile-tube':'';
+  var sel=selTube===i?' sel':'';
+  return 'tube'+msl+(state?' '+state:'')+sel;
+}
 
 function changeWeapon(i,val){
   playButtonClick();
@@ -1336,7 +1334,7 @@ function changeWeapon(i,val){
     document.getElementById('ts'+i).style.color='#444';
     document.getElementById('tf'+i).style.width='0%';
     document.getElementById('tf'+i).style.background='#444';
-    tubeEl(i).className='tube'+(selTube===i?' sel':'');
+    tubeEl(i).className=tubeClass(i,'');
     logEvt('Tube '+(i+1)+': Empty.','lw');
   } else {
     tubeStates[i]='loaded';tubeWeapons[i]=val;
@@ -1346,7 +1344,7 @@ function changeWeapon(i,val){
     document.getElementById('ts'+i).style.color='#00aa28';
     document.getElementById('tf'+i).style.width='100%';
     document.getElementById('tf'+i).style.background='#00aa28';
-    tubeEl(i).className='tube loaded'+(selTube===i?' sel':'');
+    tubeEl(i).className=tubeClass(i,'loaded');
     logEvt('Tube '+(i+1)+': '+val+' loaded.','lm');
   }
   resetSteps(i);
@@ -1358,14 +1356,17 @@ function selectTube(i){
   selTube=i;
   document.querySelectorAll('.tube').forEach(function(t,j){t.classList.toggle('sel',j===i);});
   var n=i+1;
-  var tlbl=tubeIsMissile[i]?('MISSILE: TUBE-'+(i-3)):('TORP: TUBE-'+n);
-  ['floodlbl','doorlbl','presetlbl'].forEach(function(id){document.getElementById(id).textContent=tlbl;});
-  document.getElementById('actube-hdr').textContent='T'+n+(tubeIsMissile[i]?' [MSL]':' [TRP]');
-  logEvt('Tube '+n+' selected ('+(tubeIsMissile[i]?'CRUISE MISSILE':'TORPEDO')+').','lm');
+  // Label: TORP: TUBE-1..4 or MISSILE: TUBE-1..4
+  var isMsl=tubeIsMissile[i];
+  var mslNum=(i-3); // for missile tubes 4-7 (index), display as 1-4
+  var tubeLbl=isMsl?('MISSILE: TUBE-'+mslNum):('TORP: TUBE-'+n);
+  ['floodlbl','doorlbl','presetlbl'].forEach(function(id){document.getElementById(id).textContent=tubeLbl;});
+  document.getElementById('actube-hdr').textContent='T'+n+(isMsl?' [MSL]':' [TRP]');
+  logEvt('Tube '+n+' selected ('+(isMsl?'CRUISE MISSILE':'TORPEDO')+').','lm');
   document.getElementById('fa').classList.remove('arm','pressed');
   // Show/hide wire guidance elements based on tube type
   var wgPanel=document.getElementById('wt-id');
-  if(wgPanel) wgPanel.style.opacity=tubeIsMissile[i]?'0.35':'1.0';
+  if(wgPanel) wgPanel.style.opacity=isMsl?'0.35':'1.0';
   updateSequenceUI();
 }
 
@@ -1377,7 +1378,7 @@ function floodTube(){
   if(tubeStates[i]==='rdy'){logEvt('Tube '+(i+1)+': Already READY.','lm');return;}
   if(tubeStates[i]==='flooding'){return;}
   tubeStates[i]='flooding';
-  tubeEl(i).className='tube flood sel';
+  tubeEl(i).className=tubeClass(i,'flood');
   document.getElementById('ts'+i).textContent='FLOODING...';
   document.getElementById('ts'+i).style.color='#ffaa00';
   document.getElementById('tf'+i).style.width='50%';
@@ -1387,7 +1388,7 @@ function floodTube(){
   playFloodSound(); // <-- realistic water-filling / flood & equalize sound
   setTimeout(function(){
     tubeStates[i]='rdy';
-    tubeEl(i).className='tube rdy'+(selTube===i?' sel':'');
+    tubeEl(i).className=tubeClass(i,'rdy');
     document.getElementById('ts'+i).textContent='READY';
     document.getElementById('ts'+i).style.color='#00ff41';
     document.getElementById('tf'+i).style.width='100%';
@@ -1446,7 +1447,7 @@ function fireTube(){
 
   tubeStates[i]='fired';
   tubeSteps[i]=[false,false,false];
-  tubeEl(i).className='tube fired';
+  tubeEl(i).className=tubeClass(i,'fired');
   document.getElementById('ts'+i).textContent='FIRED';
   document.getElementById('ts'+i).style.color='#ff4444';
   document.getElementById('tf'+i).style.width='100%';
@@ -1484,8 +1485,6 @@ function fireTube(){
 
   fa.disabled=true;
   fa.classList.remove('arm','pressed');
-  var sec=document.getElementById('reload-sec');
-  if(parseInt(sec.dataset.tube)===i) sec.style.display='none';
   updateSequenceUI();
 }
 
@@ -1606,23 +1605,36 @@ function cutWire(){
   showReloadOption(tubeIdx);
 }
 function showReloadOption(tubeIdx){
-  // Reload-after-fire disabled — once a tube is expended it stays expended for the engagement.
-  return;
+  var state=tubeStates[tubeIdx];
+  if(state==='loaded'||state==='loading'||state==='rdy'||state==='flooding') return;
+  var isMissile=tubeIsMissile[tubeIdx];
+  var dispNum=isMissile?(tubeIdx-3):tubeIdx+1;
+  var prefix=isMissile?'MISSILE':'TORP';
+  var wname=isMissile?'BGM-109 TLAM':'MK-48 ADCAP';
+  var tnumEl=document.querySelector('#te'+tubeIdx+' .tnum');
+  if(tnumEl){
+    tnumEl.innerHTML=prefix+': TUBE-'+dispNum+
+      ' <span onclick="reloadTube('+tubeIdx+',\''+wname+'\')" '+
+      'style="cursor:pointer;color:#ffaa00;font-size:10px;letter-spacing:0;font-weight:bold" '+
+      'title="Reload tube">&#8635;RELOAD</span>';
+  }
 }
-function reloadTube(){
+function reloadTube(tubeIdx,wname){
   playButtonClick();
-  var sec=document.getElementById('reload-sec');
-  var tubeIdx=parseInt(sec.dataset.tube);
-  var wname=document.getElementById('reload-wsel').value;
   tubeStates[tubeIdx]='loading';
   tubeSteps[tubeIdx]=[false,false,false];
-  tubeEl(tubeIdx).className='tube flood'+(selTube===tubeIdx?' sel':'');
+  tubeEl(tubeIdx).className=tubeClass(tubeIdx,'flood');
   document.getElementById('ts'+tubeIdx).textContent='RELOADING...';
   document.getElementById('ts'+tubeIdx).style.color='#ffaa00';
   document.getElementById('tf'+tubeIdx).style.width='30%';
   document.getElementById('tf'+tubeIdx).style.background='#ffaa00';
+  // Restore plain tnum label immediately
+  var isMissile=tubeIsMissile[tubeIdx];
+  var dispNum=isMissile?(tubeIdx-3):tubeIdx+1;
+  var prefix=isMissile?'MISSILE':'TORP';
+  var tnumEl=document.querySelector('#te'+tubeIdx+' .tnum');
+  if(tnumEl) tnumEl.textContent=prefix+': TUBE-'+dispNum;
   logEvt('Tube '+(tubeIdx+1)+': Reloading '+wname+' — standby.','lw');
-  sec.style.display='none';
   document.getElementById('wsel'+tubeIdx).value=wname;
   setTimeout(function(){
     tubeWeapons[tubeIdx]=wname;
@@ -1632,7 +1644,7 @@ function reloadTube(){
     document.getElementById('ts'+tubeIdx).style.color='#00aa28';
     document.getElementById('tf'+tubeIdx).style.width='100%';
     document.getElementById('tf'+tubeIdx).style.background='#00aa28';
-    tubeEl(tubeIdx).className='tube loaded'+(selTube===tubeIdx?' sel':'');
+    tubeEl(tubeIdx).className=tubeClass(tubeIdx,'loaded');
     if(selTube===tubeIdx) updateSequenceUI();
     logEvt('Tube '+(tubeIdx+1)+': '+wname+' LOADED — flood & equalize required before firing.','lm');
   },4000);
@@ -1877,39 +1889,38 @@ function drawTac(){
         }
       }
     }
-    var ang=(t.brg-90)*Math.PI/180;
-    var ttx=cx+Math.cos(ang)*R*t.rng_frac;
-    var tty=cy+Math.sin(ang)*R*t.rng_frac;
-
-    // Homing seeker (torpedoes only)
-    // If homing is explicitly enabled, steer from full range.
-    // Additionally, all torpedoes auto-acquire their target in terminal phase (close range),
-    // simulating the onboard active/passive sonar seeker activating automatically.
+    // Homing seeker (torpedoes only) — steer bearing toward target, one frame at a time
     var ct=contacts[t.contactIdx];
     var seekerActive=false;
     if(!t.isMissile&&ct&&ct.alive){
+      var SEEKER_RANGE=R*0.45;
+      var TERMINAL_RANGE=R*0.22;
+      // Compute current torpedo canvas position for distance check
+      var angChk=(t.brg-90)*Math.PI/180;
+      var txChk=cx+Math.cos(angChk)*R*t.rng_frac;
+      var tyChk=cy+Math.sin(angChk)*R*t.rng_frac;
       var ctangH=(ct.brg-90)*Math.PI/180;
       var ctxH=cx+Math.cos(ctangH)*R*ct.rng;
       var ctyH=cy+Math.sin(ctangH)*R*ct.rng;
-      var ddx=ctxH-ttx,ddy=ctyH-tty;
+      var ddx=ctxH-txChk, ddy=ctyH-tyChk;
       var distToTgt=Math.sqrt(ddx*ddx+ddy*ddy);
-      var SEEKER_RANGE=R*0.45;        // wire-guided homing activation range
-      var TERMINAL_RANGE=R*0.22;      // auto-terminal: seeker always locks on here
       var inRange=(t.homing&&distToTgt<SEEKER_RANGE)||distToTgt<TERMINAL_RANGE;
       if(inRange){
         seekerActive=true;
+        // Desired bearing toward target
         var desiredAng=Math.atan2(ddy,ddx);
         var desiredBrg=(desiredAng*180/Math.PI+90+360)%360;
         var diff=((desiredBrg-t.brg+540)%360)-180;
-        // Tighter turn rate in terminal phase for confident intercept
-        var turnRate=(distToTgt<TERMINAL_RANGE)?8:4;
-        if(Math.abs(diff)<turnRate) t.brg=desiredBrg;
+        // Gentle fixed turn rate — never overshoot
+        var turnRate=1;
+        if(Math.abs(diff)<=turnRate) t.brg=desiredBrg;
         else t.brg=(t.brg+Math.sign(diff)*turnRate+360)%360;
-        ang=(t.brg-90)*Math.PI/180;
-        ttx=cx+Math.cos(ang)*R*t.rng_frac;
-        tty=cy+Math.sin(ang)*R*t.rng_frac;
       }
     }
+
+    var ang=(t.brg-90)*Math.PI/180;
+    var ttx=cx+Math.cos(ang)*R*t.rng_frac;
+    var tty=cy+Math.sin(ang)*R*t.rng_frac;
 
     if(!t.isMissile){
       // Torpedo: draw wire line
@@ -1929,12 +1940,51 @@ function drawTac(){
           tacX.stroke();
         }
       }
-      // Torpedo dot (white)
-      tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
-      tacX.fillStyle='#ffffff';tacX.fill();
+
+      // ---- Single torpedo body — always at ttx,tty, never moves off-axis ----
+      // Direction stub behind the dot
       tacX.beginPath();tacX.moveTo(ttx,tty);
       tacX.lineTo(ttx+Math.cos(ang)*10,tty+Math.sin(ang)*10);
       tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
+      // White torpedo dot
+      tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
+      tacX.fillStyle='#ffffff';tacX.fill();
+
+      // ---- Sonar antenna icon ahead of torpedo (oscillates when seeker active) ----
+      // Antenna base is fixed 16px ahead along travel direction
+      var antDist=16;
+      var antBx=ttx+Math.cos(ang)*antDist;
+      var antBy=tty+Math.sin(ang)*antDist;
+
+      var showAntenna=(seekerActive||t.homing);
+      if(showAntenna){
+        // Smooth sinusoidal perpendicular sweep for the antenna tip only
+        if(!t._antPhase) t._antPhase=Math.random()*Math.PI*2;
+        t._antPhase+=0.22; // smooth sweep speed
+        var perpAngA=ang+Math.PI/2;
+        var antSwing=Math.sin(t._antPhase)*9; // ±9px sweep amplitude
+        var antTipX=antBx+Math.cos(perpAngA)*antSwing;
+        var antTipY=antBy+Math.sin(perpAngA)*antSwing;
+
+        // Antenna stem: dot → base
+        tacX.beginPath();tacX.moveTo(ttx,tty);tacX.lineTo(antBx,antBy);
+        tacX.strokeStyle='rgba(255,255,200,0.35)';tacX.lineWidth=0.8;tacX.stroke();
+
+        // Sweeping arm: base → tip
+        var antColor=seekerActive?'rgba(255,80,80,0.9)':'rgba(255,200,80,0.75)';
+        tacX.beginPath();tacX.moveTo(antBx,antBy);tacX.lineTo(antTipX,antTipY);
+        tacX.strokeStyle=antColor;tacX.lineWidth=1.5;tacX.stroke();
+
+        // Tip dot
+        tacX.beginPath();tacX.arc(antTipX,antTipY,2.5,0,Math.PI*2);
+        tacX.fillStyle=antColor;tacX.fill();
+
+        // Small base pivot dot
+        tacX.beginPath();tacX.arc(antBx,antBy,2,0,Math.PI*2);
+        tacX.fillStyle='rgba(255,255,180,0.6)';tacX.fill();
+      }
+
+      // ID label
       tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
       tacX.fillText(t.id,ttx+5,tty-5);
     } else {
