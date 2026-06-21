@@ -347,9 +347,9 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
         <button class="btn bg" onclick="reloadTube()">&#8635; RELOAD TUBE <span id="reload-btn-lbl">—</span></button>
       </div>
       <div class="wactn">
-        <button class="btn bg" onclick="floodTube()" id="floodbtn">FLOOD & EQUALIZE — TUBE <span id="floodlbl">1</span></button>
-        <button class="btn bg" onclick="openDoor()" id="doorbtn" disabled>OUTER DOOR OPEN — TUBE <span id="doorlbl">1</span></button>
-        <button class="btn ba" onclick="uploadPreset()" id="presetbtn" disabled>UPLOAD PRESET — TUBE <span id="presetlbl">1</span></button>
+        <button class="btn bg" onclick="floodTube()" id="floodbtn">FLOOD & EQUALIZE — <span id="floodlbl">TORP: TUBE-1</span></button>
+        <button class="btn bg" onclick="openDoor()" id="doorbtn" disabled>OUTER DOOR OPEN — <span id="doorlbl">TORP: TUBE-1</span></button>
+        <button class="btn ba" onclick="uploadPreset()" id="presetbtn" disabled>UPLOAD PRESET — <span id="presetlbl">TORP: TUBE-1</span></button>
       </div>
     </div>
 
@@ -1026,7 +1026,7 @@ function updateSequenceUI(){
     presetBtn.disabled=true;
     fa.disabled=true;
     presetPnl.classList.remove('preset-glow');
-    seqStatus.textContent=tubeStates[i]==='fired'?'Tube expended — reload to continue.':'Load a weapon first.';
+    seqStatus.textContent=tubeStates[i]==='fired'?'Tube expended — no reload available.':'Load a weapon first.';
     seqStatus.style.color='#ff4444';
     return;
   }
@@ -1358,7 +1358,8 @@ function selectTube(i){
   selTube=i;
   document.querySelectorAll('.tube').forEach(function(t,j){t.classList.toggle('sel',j===i);});
   var n=i+1;
-  ['floodlbl','doorlbl','presetlbl'].forEach(function(id){document.getElementById(id).textContent=n;});
+  var tlbl=tubeIsMissile[i]?('MISSILE: TUBE-'+(i-3)):('TORP: TUBE-'+n);
+  ['floodlbl','doorlbl','presetlbl'].forEach(function(id){document.getElementById(id).textContent=tlbl;});
   document.getElementById('actube-hdr').textContent='T'+n+(tubeIsMissile[i]?' [MSL]':' [TRP]');
   logEvt('Tube '+n+' selected ('+(tubeIsMissile[i]?'CRUISE MISSILE':'TORPEDO')+').','lm');
   document.getElementById('fa').classList.remove('arm','pressed');
@@ -1605,21 +1606,8 @@ function cutWire(){
   showReloadOption(tubeIdx);
 }
 function showReloadOption(tubeIdx){
-  var state=tubeStates[tubeIdx];
-  if(state==='loaded'||state==='loading'||state==='rdy'||state==='flooding') return;
-  var sec=document.getElementById('reload-sec');
-  if(sec.style.display==='block'&&parseInt(sec.dataset.tube)===tubeIdx) return;
-  var n=tubeIdx+1;
-  document.getElementById('reload-tube-lbl').textContent=n;
-  document.getElementById('reload-btn-lbl').textContent=n;
-  // Set reload selector to the correct weapon class for this tube
-  var rsel=document.getElementById('reload-wsel');
-  var isMissile=tubeIsMissile[tubeIdx];
-  rsel.innerHTML=isMissile?
-    '<option value="BGM-109 TLAM">BGM-109 TLAM</option>':
-    '<option value="MK-48 ADCAP">MK-48 ADCAP</option>';
-  sec.style.display='block';
-  sec.dataset.tube=tubeIdx;
+  // Reload-after-fire disabled — once a tube is expended it stays expended for the engagement.
+  return;
 }
 function reloadTube(){
   playButtonClick();
