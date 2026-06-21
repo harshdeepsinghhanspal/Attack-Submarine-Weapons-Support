@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEA/SKY-6 CMS — Weapons Control Console</title>
+<title>SAGARAVYOMA CMS — Weapons Control Console</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#040a04;min-height:100vh}
@@ -137,7 +137,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 <div class="cons" id="cons" tabindex="0">
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:10px">
-    <div class="htitle">SEA/SKY-6 CMS — WEAPONS CONTROL CONSOLE</div>
+    <div class="htitle">SAGARAVYOMA CMS — WEAPONS CONTROL CONSOLE</div>
     <button id="tut-btn" onclick="document.getElementById('tutorial-section').scrollIntoView({behavior:'smooth'})"
       style="background:transparent;font-family:'Courier New',monospace;
              font-size:10px;letter-spacing:2px;padding:3px 10px;cursor:pointer;text-transform:uppercase;
@@ -184,7 +184,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
         <div class="elog" id="elog">
           <div class="ll"><span class="lt">[00:00:01] </span><span class="lm">System initialization complete.</span></div>
           <div class="ll"><span class="lt">[00:00:02] </span><span class="lm">Sonar link established — BQQ-10 active.</span></div>
-          <div class="ll"><span class="lt">[00:00:03] </span><span class="lm">Tubes 1–4 loaded MK-48 ADCAP (TORPEDO). Tubes 5–8 loaded BGM-109 TLAM (CRUISE MISSILE).</span></div>
+          <div class="ll"><span class="lt">[00:00:03] </span><span class="lm">Tubes 1–4 loaded JALAVAJRA (TORPEDO). Tubes 5–8 loaded BHUJANGAVEGA (CRUISE MISSILE).</span></div>
         </div>
       </div>
     </div>
@@ -244,7 +244,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
               </div>
             </div>
             <div style="flex:1;display:flex;flex-direction:column;gap:2px;justify-content:center;min-width:0">
-              <button class="btn bd" onclick="selfDestructTorp()" style="width:100%;padding:4px 2px;font-size:9px">SELF-DESTRUCT</button>
+              <button class="btn bd" onclick="selfDestructTorp()" style="width:100%;padding:4px 2px;font-size:9px">SELF-BOOM</button>
               <button class="btn ba" onclick="cutWire()" style="width:100%;padding:4px 2px;font-size:9px">CUT WIRE</button>
               <button class="btn bg" onclick="wireHoming()" style="width:100%;padding:4px 2px;font-size:9px">ENABLE HOMING</button>
             </div>
@@ -260,81 +260,81 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
       <div class="tubegrid" id="tubegrid">
         <div class="tube loaded sel" id="te0" onclick="selectTube(0)">
           <div class="tnum">TORP: TUBE-1</div>
-          <div class="ttype" id="ttype0">MK-48 ADCAP</div>
+          <div class="ttype" id="ttype0">JALAVAJRA</div>
           <div class="tstat" id="ts0" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf0" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel0" onchange="changeWeapon(0,this.value)" onclick="event.stopPropagation()">
-            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="JALAVAJRA">JALAVAJRA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded" id="te1" onclick="selectTube(1)">
           <div class="tnum">TORP: TUBE-2</div>
-          <div class="ttype" id="ttype1">MK-48 ADCAP</div>
+          <div class="ttype" id="ttype1">JALAVAJRA</div>
           <div class="tstat" id="ts1" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf1" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel1" onchange="changeWeapon(1,this.value)" onclick="event.stopPropagation()">
-            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="JALAVAJRA">JALAVAJRA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded" id="te2" onclick="selectTube(2)">
           <div class="tnum">TORP: TUBE-3</div>
-          <div class="ttype" id="ttype2">MK-48 ADCAP</div>
+          <div class="ttype" id="ttype2">JALAVAJRA</div>
           <div class="tstat" id="ts2" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf2" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel2" onchange="changeWeapon(2,this.value)" onclick="event.stopPropagation()">
-            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="JALAVAJRA">JALAVAJRA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded" id="te3" onclick="selectTube(3)">
           <div class="tnum">TORP: TUBE-4</div>
-          <div class="ttype" id="ttype3">MK-48 ADCAP</div>
+          <div class="ttype" id="ttype3">JALAVAJRA</div>
           <div class="tstat" id="ts3" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf3" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel3" onchange="changeWeapon(3,this.value)" onclick="event.stopPropagation()">
-            <option value="MK-48 ADCAP">MK-48 ADCAP</option>
+            <option value="JALAVAJRA">JALAVAJRA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded missile-tube" id="te4" onclick="selectTube(4)">
           <div class="tnum">MISSILE: TUBE-1</div>
-          <div class="ttype" id="ttype4" style="color:#ffaa00">BGM-109 TLAM</div>
+          <div class="ttype" id="ttype4" style="color:#ffaa00">BHUJANGAVEGA</div>
           <div class="tstat" id="ts4" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf4" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel4" onchange="changeWeapon(4,this.value)" onclick="event.stopPropagation()">
-            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+            <option value="BHUJANGAVEGA">BHUJANGAVEGA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded missile-tube" id="te5" onclick="selectTube(5)">
           <div class="tnum">MISSILE: TUBE-2</div>
-          <div class="ttype" id="ttype5" style="color:#ffaa00">BGM-109 TLAM</div>
+          <div class="ttype" id="ttype5" style="color:#ffaa00">BHUJANGAVEGA</div>
           <div class="tstat" id="ts5" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf5" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel5" onchange="changeWeapon(5,this.value)" onclick="event.stopPropagation()">
-            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+            <option value="BHUJANGAVEGA">BHUJANGAVEGA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded missile-tube" id="te6" onclick="selectTube(6)">
           <div class="tnum">MISSILE: TUBE-3</div>
-          <div class="ttype" id="ttype6" style="color:#ffaa00">BGM-109 TLAM</div>
+          <div class="ttype" id="ttype6" style="color:#ffaa00">BHUJANGAVEGA</div>
           <div class="tstat" id="ts6" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf6" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel6" onchange="changeWeapon(6,this.value)" onclick="event.stopPropagation()">
-            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+            <option value="BHUJANGAVEGA">BHUJANGAVEGA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
         <div class="tube loaded missile-tube" id="te7" onclick="selectTube(7)">
           <div class="tnum">MISSILE: TUBE-4</div>
-          <div class="ttype" id="ttype7" style="color:#ffaa00">BGM-109 TLAM</div>
+          <div class="ttype" id="ttype7" style="color:#ffaa00">BHUJANGAVEGA</div>
           <div class="tstat" id="ts7" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf7" style="width:100%;background:#00aa28"></div></div>
           <select class="twsel" id="wsel7" onchange="changeWeapon(7,this.value)" onclick="event.stopPropagation()">
-            <option value="BGM-109 TLAM">BGM-109 TLAM</option>
+            <option value="BHUJANGAVEGA">BHUJANGAVEGA</option>
             <option value="EMPTY">-- EMPTY --</option>
           </select>
         </div>
@@ -360,25 +360,25 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 
     <!-- TORPEDO PRESET PANEL -->
     <div class="pnl" id="preset-pnl-torp" style="padding:4px 6px">
-      <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px;color:#00cc33">MK-48 ADCAP — TORPEDO PRESET</div>
+      <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px;color:#00cc33">JALAVAJRA — TORPEDO PRESET</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;margin-bottom:4px">
         <div class="prow" style="padding:1px 0"><span class="pk">WIRE GUID</span><span class="pv" style="color:#00ff41">ENABLED</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">WARHEAD</span><span class="pv">HE/PBXN</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">SEEKER RNG</span><span class="pv" id="pr-er">1800m</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">SEARCH</span><span class="pv">DART</span></div>
       </div>
-      <select class="gsel" style="margin-top:2px" id="pr-homing" onchange="logEvt('MK-48: Homing mode set — '+this.value,'lm')">
+      <select class="gsel" style="margin-top:2px" id="pr-homing" onchange="logEvt('JALAVAJRA: Homing mode set — '+this.value,'lm')">
         <option>ACTIVE/PASSIVE</option><option>PASSIVE ONLY</option><option>ACTIVE ONLY</option><option>WAKE HOMING</option>
       </select>
       <div class="dprow" style="margin-top:4px">
         <span class="dplb">SEEKER RNG</span>
-        <input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m';document.getElementById('pr-er-v').textContent=this.value+'m';logEvt('MK-48: Seeker enable range — '+this.value+'m','lm')">
+        <input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m';document.getElementById('pr-er-v').textContent=this.value+'m';logEvt('JALAVAJRA: Seeker enable range — '+this.value+'m','lm')">
         <span class="dpv" id="pr-er-v">1800m</span>
       </div>
     </div>
     <!-- MISSILE PRESET PANEL -->
     <div class="pnl" id="preset-pnl-msl" style="padding:4px 6px;display:none">
-      <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px;color:#cc8800">BGM-109 TLAM — MISSILE PRESET</div>
+      <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px;color:#cc8800">BHUJANGAVEGA — MISSILE PRESET</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px">
         <div class="prow" style="padding:1px 0"><span class="pk">GUIDANCE</span><span class="pv" style="color:#ffaa00">TERCOM/GPS</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">WARHEAD</span><span class="pv" style="color:#ffaa00">BLAST-FRAG</span></div>
@@ -996,7 +996,7 @@ var ST=Date.now();
 var selContact=-1;
 var selTarget=-1;
 var tubeStates=['loaded','loaded','loaded','loaded','loaded','loaded','loaded','loaded'];
-var tubeWeapons=['MK-48 ADCAP','MK-48 ADCAP','MK-48 ADCAP','MK-48 ADCAP','BGM-109 TLAM','BGM-109 TLAM','BGM-109 TLAM','BGM-109 TLAM'];
+var tubeWeapons=['JALAVAJRA','JALAVAJRA','JALAVAJRA','JALAVAJRA','BHUJANGAVEGA','BHUJANGAVEGA','BHUJANGAVEGA','BHUJANGAVEGA'];
 // Tube type map: 0-3 = torpedo, 4-7 = missile
 var tubeIsMissile=[false,false,false,false,true,true,true,true];
 var selTube=0;
@@ -1274,7 +1274,7 @@ function designateTarget(i,e){
   }
   // Cruise missile tubes cannot target submarines
   if(tubeIsMissile[selTube]&&contacts[i].type.indexOf('sub')>=0){
-    logEvt('CANNOT designate '+contacts[i].id+' — BGM-109 TLAM cannot engage submerged submarines. Select a surface target.','lw');
+    logEvt('CANNOT designate '+contacts[i].id+' — BHUJANGAVEGA cannot engage submerged submarines. Select a surface target.','lw');
     return;
   }
   selTarget=i; selContact=i;
@@ -1295,7 +1295,7 @@ function designateTargetById(cid,e){
   }
   // Cruise missile tubes cannot target submarines
   if(tubeIsMissile[selTube]&&contacts[i].type.indexOf('sub')>=0){
-    logEvt('CANNOT designate '+cid+' — BGM-109 TLAM cannot engage submerged submarines. Select a surface target.','lw');
+    logEvt('CANNOT designate '+cid+' — BHUJANGAVEGA cannot engage submerged submarines. Select a surface target.','lw');
     return;
   }
   selTarget=i; selContact=i;
@@ -1443,12 +1443,12 @@ function uploadPreset(){
   // Snapshot current panel values into tube preset store
   if(tubeIsMissile[i]){
     tubePresets[i]={type:'msl'};
-    logEvt('TLAM preset: LOCKED — no configurable parameters.','lm');
+    logEvt('BHUJANGAVEGA preset: LOCKED — no configurable parameters.','lm');
   } else {
     var seekerRng = parseInt(document.querySelectorAll('#preset-pnl-torp .dprow input[type=range]')[0].value)||1800;
     var homingMode= document.getElementById('pr-homing').value;
     tubePresets[i]={type:'torp',seekerRange:seekerRng,homingMode:homingMode};
-    logEvt('MK-48 preset: SEEKER='+seekerRng+'m MODE='+homingMode,'lm');
+    logEvt('JALAVAJRA preset: SEEKER='+seekerRng+'m MODE='+homingMode,'lm');
   }
 
   setTimeout(function(){
@@ -1627,8 +1627,8 @@ function selfDestructTorp(){
   activeWireTorp=null;
   explosions.push({x:ttx,y:tty,r:0,max:30,alive:true});
   playUnderwaterExplosion();
-  logEvt(t.id+': SELF-DESTRUCT — weapon scuttled.','lc');
-  document.getElementById('wst').textContent='SELF-DESTRUCTED';
+  logEvt(t.id+': SELF-BOOM — weapon scuttled.','lc');
+  document.getElementById('wst').textContent='SELF-BOOMED';
   refreshWireTorpSelector();
   updateWireDisplay();
   showReloadOption(t.tube);
@@ -1650,7 +1650,7 @@ function showReloadOption(tubeIdx){
   var isMissile=tubeIsMissile[tubeIdx];
   var dispNum=isMissile?(tubeIdx-3):tubeIdx+1;
   var prefix=isMissile?'MISSILE':'TORP';
-  var wname=isMissile?'BGM-109 TLAM':'MK-48 ADCAP';
+  var wname=isMissile?'BHUJANGAVEGA':'JALAVAJRA';
   var tnumEl=document.querySelector('#te'+tubeIdx+' .tnum');
   if(tnumEl){
     tnumEl.innerHTML=prefix+': TUBE-'+dispNum+
@@ -2218,7 +2218,7 @@ setInterval(function(){
      padding:18px 16px 24px;margin-top:6px;font-family:'Courier New',monospace;color:#00bb2e;width:100%;max-width:2000px;margin-left:auto;margin-right:auto">
   <div style="font-size:13px;font-weight:bold;color:#00ff41;letter-spacing:3px;border-bottom:1px solid #153a15;
        padding-bottom:8px;margin-bottom:16px">
-    ⬡ &nbsp; SEA/SKY-6 CMS — OPERATOR QUICK-REFERENCE GUIDE
+    ⬡ &nbsp; SAGARAVYOMA CMS — OPERATOR QUICK-REFERENCE GUIDE
     <span style="font-size:8px;color:#006a14;letter-spacing:2px;float:right;padding-top:3px">REV 19 — UNCLASSIFIED SIM</span>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
@@ -2283,7 +2283,7 @@ setInterval(function(){
           • <strong style="color:#00ff41">Click a tube</strong> to select it as the active tube.<br>
           • Use the <span style="color:#00ff41">dropdown</span> inside each tube card to change the loaded weapon type.<br>
           • Tube states: <span style="color:#1a5a1a">LOADED</span> → <span style="color:#ffaa00">FLOODING</span> → <span style="color:#00ff41">READY</span> → <span style="color:#ff4444">FIRED</span><br>
-          • Available weapons: <span style="color:#00ff41">MK-48 ADCAP</span> (Tubes 1–4 — TORPEDO) · <span style="color:#ffaa00">BGM-109 TLAM</span> (Tubes 5–8 — CRUISE MISSILE)
+          • Available weapons: <span style="color:#00ff41">JALAVAJRA</span> (Tubes 1–4 — TORPEDO) · <span style="color:#ffaa00">BHUJANGAVEGA</span> (Tubes 5–8 — CRUISE MISSILE)
         </div>
       </div>
       <div style="border:1px solid #153a15;background:#060c06;padding:10px;margin-bottom:10px">
@@ -2341,7 +2341,7 @@ setInterval(function(){
   </div>
   <div style="margin-top:14px;padding-top:8px;border-top:1px solid #0d220d;font-size:11px;
        color:#004f0e;letter-spacing:1px;text-align:center">
-    SIMULATION ONLY — NOT FOR OPERATIONAL USE &nbsp;|&nbsp; SEA/SKY-6 CMS WEAPONS CONTROL CONSOLE v19 &nbsp;|&nbsp; ALL CONTACTS ARE SIMULATED
+    SIMULATION ONLY — NOT FOR OPERATIONAL USE &nbsp;|&nbsp; SAGARAVYOMA CMS WEAPONS CONTROL CONSOLE v19 &nbsp;|&nbsp; ALL CONTACTS ARE SIMULATED
   </div>
 </div>
 
