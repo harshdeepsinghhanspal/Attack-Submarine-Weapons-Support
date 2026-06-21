@@ -580,64 +580,114 @@ function playFloodSound() {
 }
 
 // -------------------------------------------------------
-// AMBIENT SUBMARINE SONAR PING (active sonar transducer)
-// Realistic active sonar "ping" is a short, low-frequency tonal
-// pulse with a natural resonant decay and reverberant tail — NOT
-// a clean sine beep. Built here from a narrow bandpass-filtered
-// noise burst (gives the metallic transducer ring) layered with
-// a longer, deep low-pass body for the underwater "boom" feel,
-// plus a soft reverberant tail simulating the ping bouncing
-// through the water column.
+// ACTIVE SONAR PING — UNDERWATER SINE TRANSDUCER
+// Pure sine at 2000 Hz, zero-attack mallet strike, fast
+// natural decay (200ms), zero sustain.
+// Effects chain:
+//   a) Direct path — sharp sine transient, dry
+//   b) Hall reverb — synthesised from filtered noise IR,
+//      4–5s decay, 50% wet, low-pass filtered at 4kHz
+//      to simulate sound travelling through water column
+//   c) Ping-pong delay — two offset echoes simulating
+//      the ping bouncing off a distant hull
 // -------------------------------------------------------
 function playSonarPing() {
   var ctx = getCtx();
   var t = ctx.currentTime;
+  var FREQ = 2000; // Hz — clear, piercing transducer note
 
-  // Clean active-sonar "ting" — lowered fundamental, no deep sub-bass.
+  // Build a synthetic reverb impulse response:
+  // Long decaying noise (4.5s), low-pass filtered to 4kHz
+  // so the reverb tail sounds like water, not air.
+  var irLen = Math.floor(ctx.sampleRate * 4.5);
+  var irBuf = ctx.createBuffer(2, irLen, ctx.sampleRate);
+  for (var ch = 0; ch < 2; ch++) {
+    var d = irBuf.getChannelData(ch);
+    for (var k = 0; k < irLen; k++) {
+      // Exponential decay envelope on white noise
+      var decay = Math.pow(1 - k / irLen, 3.5);
+      d[k] = (Math.random() * 2 - 1) * decay;
+    }
+  }
+  var conv = ctx.createConvolver();
+  conv.buffer = irBuf;
 
-  // a) Fundamental tone — lowered slightly
-  var o1 = ctx.createOscillator();
-  o1.type = 'sine';
-  o1.frequency.value = 850;
-  var env1 = makeGain(ctx, 0);
-  o1.connect(env1); env1.connect(out(ctx));
-  env1.gain.setValueAtTime(0, t);
-  env1.gain.linearRampToValueAtTime(0.08, t + 0.01);
-  env1.gain.exponentialRampToValueAtTime(0.0002, t + 1.6);
-  o1.start(t); o1.stop(t + 1.7);
+  // Low-pass filter on reverb tail — cuts above 4kHz,
+  // makes echo sound like it's traveling through water
+  var reverbLP = ctx.createBiquadFilter();
+  reverbLP.type = 'lowpass';
+  reverbLP.frequency.value = 4000;
+  reverbLP.Q.value = 0.5;
 
-  // b) Octave overtone — subtle shimmer, quiet
-  var o2 = ctx.createOscillator();
-  o2.type = 'sine';
-  o2.frequency.value = 1700;
-  var env2 = makeGain(ctx, 0);
-  o2.connect(env2); env2.connect(out(ctx));
-  env2.gain.setValueAtTime(0, t);
-  env2.gain.linearRampToValueAtTime(0.02, t + 0.006);
-  env2.gain.exponentialRampToValueAtTime(0.00015, t + 0.5);
-  o2.start(t); o2.stop(t + 0.6);
+  // Reverb wet gain (50%)
+  var reverbGain = ctx.createGain();
+  reverbGain.gain.value = 0.50;
 
-  // c) Sub-octave body — light weight beneath the tone
-  var o3 = ctx.createOscillator();
-  o3.type = 'sine';
-  o3.frequency.value = 425;
-  var env3 = makeGain(ctx, 0);
-  o3.connect(env3); env3.connect(out(ctx));
-  env3.gain.setValueAtTime(0, t);
-  env3.gain.linearRampToValueAtTime(0.085, t + 0.012);
-  env3.gain.exponentialRampToValueAtTime(0.0002, t + 1.4);
-  o3.start(t); o3.stop(t + 1.5);
+  // Dry gain (50%)
+  var dryGain = ctx.createGain();
+  dryGain.gain.value = 0.50;
 
-  // d) Very soft reverberant echo tail — quieter, longer decay
-  var o5 = ctx.createOscillator();
-  o5.type = 'sine';
-  o5.frequency.value = 850;
-  var env5 = makeGain(ctx, 0);
-  o5.connect(env5); env5.connect(out(ctx));
-  env5.gain.setValueAtTime(0, t + 0.05);
-  env5.gain.linearRampToValueAtTime(0.0175, t + 0.08);
-  env5.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
-  o5.start(t + 0.05); o5.stop(t + 2.5);
+  // Source oscillator — pure sine, 2000 Hz
+  var osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = FREQ;
+
+  // Envelope: instantaneous attack, 200ms decay, zero sustain
+  var env = ctx.createGain();
+  env.gain.setValueAtTime(0, t);
+  env.gain.linearRampToValueAtTime(0.9, t + 0.001);   // near-zero attack — mallet strike
+  env.gain.exponentialRampToValueAtTime(0.0001, t + 0.22); // 220ms decay to silence
+  osc.connect(env);
+
+  // Dry path
+  env.connect(dryGain);
+  dryGain.connect(out(ctx));
+
+  // Reverb path — env → conv → LP → reverbGain → out
+  env.connect(conv);
+  conv.connect(reverbLP);
+  reverbLP.connect(reverbGain);
+  reverbGain.connect(out(ctx));
+
+  // Ping-pong delay: two echoes offset in time, simulating
+  // ping bouncing off a distant hull at ~600ms and ~1100ms
+  // Left echo
+  var delayL = ctx.createDelay(2.0);
+  delayL.delayTime.value = 0.62;
+  var feedbackL = ctx.createGain();
+  feedbackL.gain.value = 0.30;
+  var panL = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+  if (panL) panL.pan.value = -0.6;
+
+  // Right echo
+  var delayR = ctx.createDelay(2.0);
+  delayR.delayTime.value = 1.10;
+  var feedbackR = ctx.createGain();
+  feedbackR.gain.value = 0.18;
+  var panR = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+  if (panR) panR.pan.value = 0.6;
+
+  // Low-pass on delay tails — same water-damping
+  var delayLP = ctx.createBiquadFilter();
+  delayLP.type = 'lowpass';
+  delayLP.frequency.value = 4000;
+
+  var delayMix = ctx.createGain();
+  delayMix.gain.value = 0.22;
+
+  env.connect(delayL);
+  env.connect(delayR);
+
+  if (panL) { delayL.connect(feedbackL); feedbackL.connect(panL); panL.connect(delayLP); }
+  else { delayL.connect(feedbackL); feedbackL.connect(delayLP); }
+  if (panR) { delayR.connect(feedbackR); feedbackR.connect(panR); panR.connect(delayLP); }
+  else { delayR.connect(feedbackR); feedbackR.connect(delayLP); }
+
+  delayLP.connect(delayMix);
+  delayMix.connect(out(ctx));
+
+  osc.start(t);
+  osc.stop(t + 0.25); // stop oscillator after attack+decay window
 }
 
 // Sonar ping ambient toggle — pings every 5 seconds while enabled
@@ -2334,7 +2384,7 @@ setInterval(function(){
           • <span style="color:#ffaa00">Torpedo launch</span>: pneumatic ejection thump → water displacement swoosh → bubbling wake<br>
           • <span style="color:#ff4444">Detonation</span>: distant sub-bass thump + muffled rumble + faint shimmer + long low reverb tail<br>
           • <span style="color:#4488ff">Propeller noise</span>: surface ships within 2.5km range produce blade-chop AM noise, volume proportional to proximity<br>
-          • <span style="color:#00ff41">Sonar ping toggle</span> (header bar): when enabled, emits a low-frequency active sonar ping every 5 seconds — built from filtered noise bursts (220Hz transducer ring + 95Hz body thump + reverberant tail), not a synthetic beep
+          • <span style="color:#00ff41">Sonar ping toggle</span> (header bar): when enabled, emits a pure 2000 Hz sine transducer strike every 5 seconds — instantaneous attack (mallet feel), 200ms natural decay, zero sustain. Processed through a synthesised 4.5s hall reverb (low-pass filtered at 4kHz to simulate sound travelling through water) and a ping-pong delay at 620ms/1100ms to simulate echoes bouncing off distant hulls
         </div>
       </div>
     </div>
