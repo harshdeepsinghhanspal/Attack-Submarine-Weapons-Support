@@ -361,59 +361,34 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
     <!-- TORPEDO PRESET PANEL -->
     <div class="pnl" id="preset-pnl-torp" style="padding:4px 6px">
       <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px;color:#00cc33">MK-48 ADCAP — TORPEDO PRESET</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px">
-        <div class="prow" style="padding:1px 0"><span class="pk">SEARCH</span><span class="pv">SNAKE-6</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px;margin-bottom:4px">
         <div class="prow" style="padding:1px 0"><span class="pk">WIRE GUID</span><span class="pv" style="color:#00ff41">ENABLED</span></div>
-        <div class="prow" style="padding:1px 0"><span class="pk">SEEKER RNG</span><span class="pv" id="pr-er">1800m</span></div>
-        <div class="prow" style="padding:1px 0"><span class="pk">DEPTH LIM</span><span class="pv" id="pr-dl">450m</span></div>
-        <div class="prow" style="padding:1px 0"><span class="pk">RUN SPEED</span><span class="pv" id="pr-spd">35kt</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">WARHEAD</span><span class="pv">HE/PBXN</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">SEEKER RNG</span><span class="pv" id="pr-er">1800m</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">SEARCH</span><span class="pv">DART</span></div>
       </div>
-      <select class="gsel" style="margin-top:3px" id="pr-homing" onchange="logEvt('MK-48: Homing mode set — '+this.value,'lm')">
+      <select class="gsel" style="margin-top:2px" id="pr-homing" onchange="logEvt('MK-48: Homing mode set — '+this.value,'lm')">
         <option>ACTIVE/PASSIVE</option><option>PASSIVE ONLY</option><option>ACTIVE ONLY</option><option>WAKE HOMING</option>
       </select>
-      <div class="dprow" style="margin-top:3px">
-        <span class="dplb">DEPTH LIM</span>
-        <input type="range" class="grange" min="50" max="800" value="450" step="10" oninput="document.getElementById('pr-dl').textContent=this.value+'m';logEvt('MK-48: Depth limit — '+this.value+'m','lm')">
-        <span class="dpv" id="pr-dl-v">450m</span>
-      </div>
-      <div class="dprow" style="margin-top:2px">
+      <div class="dprow" style="margin-top:4px">
         <span class="dplb">SEEKER RNG</span>
-        <input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m';document.getElementById('pr-dl-v').textContent|0;logEvt('MK-48: Seeker enable range — '+this.value+'m','lm')">
+        <input type="range" class="grange" min="200" max="5000" value="1800" step="100" oninput="document.getElementById('pr-er').textContent=this.value+'m';document.getElementById('pr-er-v').textContent=this.value+'m';logEvt('MK-48: Seeker enable range — '+this.value+'m','lm')">
         <span class="dpv" id="pr-er-v">1800m</span>
-      </div>
-      <div class="dprow" style="margin-top:2px">
-        <span class="dplb">SALVO DLY</span>
-        <input type="range" class="grange" min="0" max="30" value="0" step="1" oninput="logEvt('MK-48: Salvo delay — '+this.value+'s','lm')">
-        <span class="dpv">0s</span>
       </div>
     </div>
     <!-- MISSILE PRESET PANEL -->
     <div class="pnl" id="preset-pnl-msl" style="padding:4px 6px;display:none">
       <div class="ptitle" style="margin-bottom:3px;padding-bottom:1px;color:#cc8800">BGM-109 TLAM — MISSILE PRESET</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 8px">
-        <div class="prow" style="padding:1px 0"><span class="pk">FLIGHT ALT</span><span class="pv" id="msl-alt">50m</span></div>
-        <div class="prow" style="padding:1px 0"><span class="pk">WARHEAD</span><span class="pv" style="color:#ffaa00">BLAST-FRAG</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">GUIDANCE</span><span class="pv" style="color:#ffaa00">TERCOM/GPS</span></div>
-        <div class="prow" style="padding:1px 0"><span class="pk">FUZE</span><span class="pv" id="msl-fuze">IMPACT</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">WARHEAD</span><span class="pv" style="color:#ffaa00">BLAST-FRAG</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">RANGE MAX</span><span class="pv">1600km</span></div>
         <div class="prow" style="padding:1px 0"><span class="pk">SPD</span><span class="pv">880km/h</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">TARGET</span><span class="pv" style="color:#ffaa00">SURFACE ONLY</span></div>
+        <div class="prow" style="padding:1px 0"><span class="pk">FUZE</span><span class="pv" style="color:#ffaa00">IMPACT</span></div>
       </div>
-      <select class="gsel" style="margin-top:3px" id="msl-attack" onchange="logEvt('TLAM: Attack profile — '+this.value,'lm')">
-        <option>SEA-SKIMMING</option><option>TERRAIN FOLLOWING</option><option>POP-UP TERMINAL</option><option>DIRECT DESCENT</option>
-      </select>
-      <select class="gsel" style="margin-top:3px" id="msl-fuze-sel" onchange="document.getElementById('msl-fuze').textContent=this.value;logEvt('TLAM: Fuze mode — '+this.value,'lm')">
-        <option>IMPACT</option><option>PROXIMITY</option><option>DELAY</option><option>AIR BURST</option>
-      </select>
-      <div class="dprow" style="margin-top:3px">
-        <span class="dplb">FLIGHT ALT</span>
-        <input type="range" class="grange" min="15" max="300" value="50" step="5" oninput="document.getElementById('msl-alt').textContent=this.value+'m';logEvt('TLAM: Flight altitude — '+this.value+'m','lm')">
-        <span class="dpv" id="msl-alt-v">50m</span>
-      </div>
-      <div class="dprow" style="margin-top:2px">
-        <span class="dplb">BOOST DLY</span>
-        <input type="range" class="grange" min="0" max="60" value="0" step="5" oninput="logEvt('TLAM: Booster delay — '+this.value+'s','lm')">
-        <span class="dpv">0s</span>
+      <div style="margin-top:6px;padding:3px 4px;background:#0a0500;border:1px solid #3a2000;font-size:9px;color:#cc6600;letter-spacing:1px;text-align:center">
+        NO CONFIGURABLE PARAMETERS — PRESET LOCKED
       </div>
     </div>
   </div>
@@ -1038,6 +1013,7 @@ var contactIdCounter=8;
 // ========== STEP MANAGEMENT ==========
 function resetSteps(i){
   tubeSteps[i]=[false,false,false];
+  tubePresets[i]=null;
 }
 
 function updateSequenceUI(){
@@ -1454,12 +1430,27 @@ function openDoor(){
   updateSequenceUI();
 }
 
+// Per-tube stored preset values (populated on UPLOAD PRESET)
+var tubePresets = [null,null,null,null,null,null,null,null];
+
 function uploadPreset(){
   playButtonClick();
   var i=selTube;
   if(!tubeSteps[i][1]){logEvt('Tube '+(i+1)+': Open outer door first.','lw');return;}
   logEvt('Preset upload — Tube '+(i+1)+'.','lm');
   document.getElementById('presetbtn').disabled=true;
+
+  // Snapshot current panel values into tube preset store
+  if(tubeIsMissile[i]){
+    tubePresets[i]={type:'msl'};
+    logEvt('TLAM preset: LOCKED — no configurable parameters.','lm');
+  } else {
+    var seekerRng = parseInt(document.querySelectorAll('#preset-pnl-torp .dprow input[type=range]')[0].value)||1800;
+    var homingMode= document.getElementById('pr-homing').value;
+    tubePresets[i]={type:'torp',seekerRange:seekerRng,homingMode:homingMode};
+    logEvt('MK-48 preset: SEEKER='+seekerRng+'m MODE='+homingMode,'lm');
+  }
+
   setTimeout(function(){
     tubeSteps[i][2]=true;
     logEvt('Tube '+(i+1)+': Preset upload COMPLETE.','lm');
@@ -1482,8 +1473,9 @@ function fireTube(){
     return;
   }
 
+  var preset=tubePresets[i]||{};
+
   if(isMissile){
-    // Cruise missile launch — surface egress, then sustained flight
     playCruiseMissileLaunch();
     logEvt('MISSILE AWAY — '+wname+' TUBE '+(i+1)+' → '+tgt.id+' [TRANSIT IN PROGRESS]','lc');
   } else {
@@ -1507,9 +1499,11 @@ function fireTube(){
     brg:tgt.brg,
     rng_frac:0.04,
     spd_kt:spd,
-    wire_intact:!isMissile,   // missiles have no wire
+    wire_intact:!isMissile,
     wire_paid:0,
-    isMissile:isMissile
+    isMissile:isMissile,
+    seekerRange: isMissile ? null : (preset.seekerRange||1800),
+    homingMode:  isMissile ? null : (preset.homingMode||'ACTIVE/PASSIVE')
   };
   torpedoes.push(torp);
 
@@ -1523,7 +1517,7 @@ function fireTube(){
     document.getElementById('wst').textContent='INTACT — GUIDING';
     document.getElementById('wpo').textContent='0m';
   } else {
-    // Missile: log estimated time of impact based on range
+    // Missile: log estimated time of impact
     var rngKm=tgt.rng*10;
     var etaSec=Math.round((rngKm/spd)*3600);
     logEvt(wname+': Range '+rngKm.toFixed(1)+'km — ETA ~'+etaSec+'s — missile in flight.','lw');
@@ -1939,7 +1933,9 @@ function drawTac(){
     var ct=contacts[t.contactIdx];
     var seekerActive=false;
     if(!t.isMissile&&ct&&ct.alive){
-      var SEEKER_RANGE=R*0.45;
+      // Map preset seekerRange (metres) to canvas fraction: 10km = R*1.0, so seekerRange_m/10000 * R
+      var seekerRngPx = ((t.seekerRange||1800)/10000) * R;
+      var SEEKER_RANGE = seekerRngPx;
       var TERMINAL_RANGE=R*0.22;
       // Compute current torpedo canvas position for distance check
       var angChk=(t.brg-90)*Math.PI/180;
@@ -1950,7 +1946,27 @@ function drawTac(){
       var ctyH=cy+Math.sin(ctangH)*R*ct.rng;
       var ddx=ctxH-txChk, ddy=ctyH-tyChk;
       var distToTgt=Math.sqrt(ddx*ddx+ddy*ddy);
-      var inRange=(t.homing&&distToTgt<SEEKER_RANGE)||distToTgt<TERMINAL_RANGE;
+
+      // Homing mode logic
+      var mode=t.homingMode||'ACTIVE/PASSIVE';
+      var canSeek=false;
+      if(mode==='WAKE HOMING'){
+        // Only homes if approaching from behind target (within ±45° of target's stern)
+        var torpBrgFromTgt=(Math.atan2(tyChk-ctyH,txChk-ctxH)*180/Math.PI+360)%360;
+        var ctHdgRad=ct.hdg;
+        var sternBrg=(ctHdgRad+180)%360;
+        var angleOff=Math.abs(((torpBrgFromTgt-sternBrg+540)%360)-180);
+        canSeek=(angleOff<45&&(t.homing||distToTgt<TERMINAL_RANGE));
+        if(t.homing&&!canSeek&&distToTgt<SEEKER_RANGE){
+          // not in wake cone — no seeker
+        }
+      } else if(mode==='PASSIVE ONLY'){
+        canSeek=(t.homing&&distToTgt<SEEKER_RANGE)||distToTgt<TERMINAL_RANGE;
+      } else {
+        // ACTIVE/PASSIVE or ACTIVE ONLY
+        canSeek=(t.homing&&distToTgt<SEEKER_RANGE)||distToTgt<TERMINAL_RANGE;
+      }
+      var inRange=canSeek;
       if(inRange){
         seekerActive=true;
         // Desired bearing toward target
@@ -2035,7 +2051,6 @@ function drawTac(){
       tacX.fillText(t.id,ttx+5,tty-5);
     } else {
       // Cruise missile: orange diamond with longer diagonal pointing toward target (forward)
-      // ang is the direction of travel; we draw a diamond rotated so its tip points forward
       var trailLen=18;
       tacX.beginPath();
       tacX.moveTo(ttx,tty);
@@ -2077,7 +2092,8 @@ function drawTac(){
           logEvt('IMPACT: '+t.id+' — '+ct.id+' DESTROYED [AIR BURST]','lc');
         } else {
           playUnderwaterExplosion();
-          logEvt('DETONATION: '+t.id+' — '+ct.id+' DESTROYED','lc');
+          var modeMsg=t.homingMode?(' ['+t.homingMode+']'):'';
+          logEvt('DETONATION: '+t.id+' — '+ct.id+' DESTROYED'+modeMsg,'lc');
         }
         stopPropeller(ct.id);
         if(!t.isMissile){
