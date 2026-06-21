@@ -55,6 +55,9 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
 .tube.rdy{border-color:#00ff41;background:#001200}
 .tube.fired{border-color:#ff4444;background:#0f0000}
 .tube.sel{border-color:#00ff41 !important;background:#002800 !important;box-shadow:0 0 8px rgba(0,255,65,0.35) inset, 0 0 6px rgba(0,255,65,0.25)}
+.tube:nth-child(n+5):not(.loaded):not(.rdy):not(.fired):not(.flood){border-color:#7a5500}
+.tube.loaded:nth-child(n+5){border-color:#ffaa00}
+.tube:nth-child(n+5):hover{border-color:#ffcc44}
 .tnum{font-size:8px;color:#006a14;letter-spacing:1px}
 .tube.sel .tnum{color:#00ff41;font-weight:bold}
 .ttype{font-size:10px;color:#00cc33;font-weight:bold;margin:1px 0}
@@ -256,7 +259,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
       <div class="ptitle">TUBE & WEAPON STATUS</div>
       <div class="tubegrid" id="tubegrid">
         <div class="tube loaded sel" id="te0" onclick="selectTube(0)">
-          <div class="tnum">TUBE 1 — TORP</div>
+          <div class="tnum">TORP: TUBE-1</div>
           <div class="ttype" id="ttype0">MK-48 ADCAP</div>
           <div class="tstat" id="ts0" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf0" style="width:100%;background:#00aa28"></div></div>
@@ -266,7 +269,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te1" onclick="selectTube(1)">
-          <div class="tnum">TUBE 2 — TORP</div>
+          <div class="tnum">TORP: TUBE-2</div>
           <div class="ttype" id="ttype1">MK-48 ADCAP</div>
           <div class="tstat" id="ts1" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf1" style="width:100%;background:#00aa28"></div></div>
@@ -276,7 +279,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te2" onclick="selectTube(2)">
-          <div class="tnum">TUBE 3 — TORP</div>
+          <div class="tnum">TORP: TUBE-3</div>
           <div class="ttype" id="ttype2">MK-48 ADCAP</div>
           <div class="tstat" id="ts2" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf2" style="width:100%;background:#00aa28"></div></div>
@@ -286,7 +289,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te3" onclick="selectTube(3)">
-          <div class="tnum">TUBE 4 — TORP</div>
+          <div class="tnum">TORP: TUBE-4</div>
           <div class="ttype" id="ttype3">MK-48 ADCAP</div>
           <div class="tstat" id="ts3" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf3" style="width:100%;background:#00aa28"></div></div>
@@ -296,7 +299,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te4" onclick="selectTube(4)">
-          <div class="tnum">TUBE 5 — MISSILE</div>
+          <div class="tnum">MISSILE: TUBE-1</div>
           <div class="ttype" id="ttype4" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts4" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf4" style="width:100%;background:#00aa28"></div></div>
@@ -306,7 +309,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te5" onclick="selectTube(5)">
-          <div class="tnum">TUBE 6 — MISSILE</div>
+          <div class="tnum">MISSILE: TUBE-2</div>
           <div class="ttype" id="ttype5" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts5" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf5" style="width:100%;background:#00aa28"></div></div>
@@ -316,7 +319,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te6" onclick="selectTube(6)">
-          <div class="tnum">TUBE 7 — MISSILE</div>
+          <div class="tnum">MISSILE: TUBE-3</div>
           <div class="ttype" id="ttype6" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts6" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf6" style="width:100%;background:#00aa28"></div></div>
@@ -326,7 +329,7 @@ canvas{display:block;background:#020a02;border:1px solid #153a15}
           </select>
         </div>
         <div class="tube loaded" id="te7" onclick="selectTube(7)">
-          <div class="tnum">TUBE 8 — MISSILE</div>
+          <div class="tnum">MISSILE: TUBE-4</div>
           <div class="ttype" id="ttype7" style="color:#ffaa00">BGM-109 TLAM</div>
           <div class="tstat" id="ts7" style="color:#00aa28">LOADED</div>
           <div class="tbar"><div class="tfill" id="tf7" style="width:100%;background:#00aa28"></div></div>
@@ -1920,6 +1923,23 @@ function drawTac(){
       }
     }
 
+    // Terminal dash — as the torpedo closes inside split range it breaks into a
+    // shuddering pair tracing a smooth snake-pattern weave into the target.
+    var splitActive=false,snakeX=0,snakeY=0,splitOffset=0,snakePhase=0,perpAngS=ang+Math.PI/2;
+    if(!t.isMissile&&ct&&ct.alive&&typeof distToTgt!=='undefined'){
+      var SPLIT_RANGE=R*0.16;
+      if(distToTgt<SPLIT_RANGE){
+        splitActive=true;
+        var closeness=1-(distToTgt/SPLIT_RANGE); // 0 → just entered, 1 → right on top of target
+        snakePhase=t.rng_frac*260;
+        var snakeAmp=4+closeness*9;
+        var snakeOff=Math.sin(snakePhase)*snakeAmp;
+        snakeX=Math.cos(perpAngS)*snakeOff;
+        snakeY=Math.sin(perpAngS)*snakeOff;
+        splitOffset=2.5+closeness*4.5;
+      }
+    }
+
     if(!t.isMissile){
       // Torpedo: draw wire line
       if(t.wire_intact){
@@ -1938,14 +1958,31 @@ function drawTac(){
           tacX.stroke();
         }
       }
-      // Torpedo dot (white)
-      tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
-      tacX.fillStyle='#ffffff';tacX.fill();
-      tacX.beginPath();tacX.moveTo(ttx,tty);
-      tacX.lineTo(ttx+Math.cos(ang)*10,tty+Math.sin(ang)*10);
-      tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
-      tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
-      tacX.fillText(t.id,ttx+5,tty-5);
+      // Torpedo dot(s) — normal single body, or violently shuddering split pair on terminal approach
+      if(splitActive){
+        var baseX=ttx+snakeX,baseY=tty+snakeY;
+        var jit1=Math.sin(snakePhase*1.7)*1.6;
+        var jit2=Math.sin(snakePhase*1.7+Math.PI)*1.6;
+        var s1x=baseX+Math.cos(perpAngS)*(splitOffset+jit1),s1y=baseY+Math.sin(perpAngS)*(splitOffset+jit1);
+        var s2x=baseX-Math.cos(perpAngS)*(splitOffset+jit2),s2y=baseY-Math.sin(perpAngS)*(splitOffset+jit2);
+        [[s1x,s1y],[s2x,s2y]].forEach(function(p){
+          tacX.beginPath();tacX.arc(p[0],p[1],3.2,0,Math.PI*2);
+          tacX.fillStyle='#ffffff';tacX.fill();
+          tacX.beginPath();tacX.moveTo(p[0],p[1]);
+          tacX.lineTo(p[0]+Math.cos(ang)*9,p[1]+Math.sin(ang)*9);
+          tacX.strokeStyle='rgba(255,255,200,0.85)';tacX.lineWidth=1.1;tacX.stroke();
+        });
+        tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
+        tacX.fillText(t.id,baseX+5,baseY-9);
+      } else {
+        tacX.beginPath();tacX.arc(ttx,tty,4,0,Math.PI*2);
+        tacX.fillStyle='#ffffff';tacX.fill();
+        tacX.beginPath();tacX.moveTo(ttx,tty);
+        tacX.lineTo(ttx+Math.cos(ang)*10,tty+Math.sin(ang)*10);
+        tacX.strokeStyle='rgba(255,255,200,0.8)';tacX.lineWidth=1.2;tacX.stroke();
+        tacX.fillStyle='rgba(255,255,200,0.7)';tacX.font='12px Courier New';
+        tacX.fillText(t.id,ttx+5,tty-5);
+      }
     } else {
       // Cruise missile: orange diamond with longer diagonal pointing toward target (forward)
       // ang is the direction of travel; we draw a diamond rotated so its tip points forward
